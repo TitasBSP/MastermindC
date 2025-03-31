@@ -12,6 +12,7 @@ int main()
     int screenWidth = 960;
     int screenHeight = 540;
 
+    // Colors: Red green blue yellow orange pink grey white
     
 
     // Main game loop
