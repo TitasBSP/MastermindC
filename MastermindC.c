@@ -2,6 +2,7 @@
 #include "stdio.h"
 #include "string.h"
 #include "stdlib.h"
+#include "unistd.h"
 
 float alphaMain = 0.0f;
 
@@ -9,6 +10,8 @@ int main(void)
 {
     bool mainScreen = true;
     bool gamemodeScreen = false;
+    
+    bool startingScreen = false;
     
     bool normalScreen = false;
     bool advancedScreen = false;
@@ -34,11 +37,14 @@ int main(void)
     float PlayInvisY = 560;
     Rectangle invisPlayBtn = {PlayInvisX, PlayInvisY, 470, 180};
     float alphaInvis = 0.0f;
+    
     // ---------------------- GAMEMODE CHOICE --------------------- //
     
     char gamemodeTitle[22] = "CHOOSE YOUR GAMEMODE";
     Vector2 posGamemodeTitle = {75, 100};
     int gamemodeTitleSize = 150;
+    
+    // -- NORMAL -- //
     
     float NormalBtnX = 550;
     float NormalBtnY = 450;
@@ -47,12 +53,24 @@ int main(void)
     int NormalTextSize = 120;
     Vector2 posNormalShdw = {337, 397};
     
+    float invisNormalBtnX = 290;
+    float invisNormalBtnY = 350;
+    Rectangle invisNormalBtn = {invisNormalBtnX, invisNormalBtnY, 550, 200};
+    
+    // -- ADVANCED -- //
+    
     float AdvancedBtnX = 1300;
     float AdvancedBtnY = 450;
     char AdvancedText[9] = "ADVANCED";
     Vector2 posAdvancedText = {1035, 395};
     int AdvancedTextSize = 110;
     Vector2 posAdvancedShdw = {1042, 402};
+    
+    float invisAdvancedBtnX = 1020;
+    float invisAdvancedBtnY = 350;
+    Rectangle invisAdvancedBtn = {invisAdvancedBtnX, invisAdvancedBtnY, 550, 200};
+    
+    // -- ZEN -- //
     
     float ZenBtnX = 550;
     float ZenBtnY = 850;
@@ -61,6 +79,12 @@ int main(void)
     int ZenTextSize = 150;
     Vector2 posZenShdw = {432, 787};
     
+    float invisZenBtnX = 290;
+    float invisZenBtnY = 750;
+    Rectangle invisZenBtn = {invisZenBtnX, invisZenBtnY, 550, 200};
+    
+    // -- ENDLESS -- //
+    
     float EndlessBtnX = 1300;
     float EndlessBtnY = 850;
     char EndlessText[8] = "ENDLESS";
@@ -68,10 +92,26 @@ int main(void)
     int EndlessTextSize = 120;
     Vector2 posEndlessShdw = {1087, 802};
     
+    float invisEndlessBtnX = 1020;
+    float invisEndlessBtnY = 750;
+    Rectangle invisEndlessBtn = {invisEndlessBtnX, invisEndlessBtnY, 550, 200};
     
-    
+    // -- GAMEMODE ALPHA -- //
     
     float alphaGamemode = 0.0f;
+    float alphaGamemodeBtns = 0.0f;
+    
+    // ---------------------- STARTING SCREEN --------------------- //
+    
+    float alphaNUM3 = 0.0f;
+    float alphaNUM2 = 0.0f;
+    float alphaNUM1 = 0.0f;
+    float alphaGO = 0.0f;
+    
+    char StartingTHREE[2] = "3";
+    char StartingTWO[2] = "2";
+    char StartingONE[2] = "1";
+    char StartingGO[3] = "GO";
     
     
     // ---------------------- INITIALIZATION ---------------------- //
@@ -109,10 +149,20 @@ int main(void)
             SetMouseCursor(MOUSE_CURSOR_DEFAULT);
         }
         
+        if (isHoveringNormalBtn && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == true) {
+            gamemodeScreen = false;
+            startingScreen = true;
+            printf("endless.");
+            fflush(stdout);   
+        } else if (isHoveringNormalBtn && mainScreen == true) {
+            SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
+        } else {
+            SetMouseCursor(MOUSE_CURSOR_DEFAULT);
+        }
         
         if (isHoveringAdvancedBtn && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == true) {
             gamemodeScreen = false;
-            advancedScreen = true;
+            startingScreen = true;
             printf("advanced.");
             fflush(stdout);   
         } else if (isHoveringAdvancedBtn && mainScreen == true) {
@@ -123,7 +173,7 @@ int main(void)
         
         if (isHoveringZenBtn && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == true) {
             gamemodeScreen = false;
-            zenScreen = true;
+            startingScreen = true;
             printf("zen.");
             fflush(stdout);   
         } else if (isHoveringZenBtn && mainScreen == true) {
@@ -134,7 +184,7 @@ int main(void)
         
         if (isHoveringEndlessBtn && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == true) {
             gamemodeScreen = false;
-            endlessScreen = true;
+            startingScreen = true;
             printf("endless.");
             fflush(stdout);   
         } else if (isHoveringEndlessBtn && mainScreen == true) {
@@ -179,6 +229,38 @@ int main(void)
                 
                 DrawTextEx(font, EndlessText, posEndlessShdw, EndlessTextSize, 8, Fade(BLACK, alphaGamemode));
                 DrawTextEx(font, EndlessText, posEndlessText, EndlessTextSize, 8, Fade(WHITE, alphaGamemode));
+                
+                DrawRectangleRec(invisNormalBtn, Fade(RED, alphaGamemodeBtns));
+                DrawRectangleRec(invisAdvancedBtn, Fade(RED, alphaGamemodeBtns));
+                DrawRectangleRec(invisZenBtn, Fade(RED, alphaGamemodeBtns));
+                DrawRectangleRec(invisEndlessBtn, Fade(RED, alphaGamemodeBtns));
+            }
+            
+            if (startingScreen) {
+                if (alphaNUM3 < 1) {
+                    if (alphaNUM3 < 1) alphaNUM3 += 0.02f;
+                    DrawText(StartingTHREE, 700, 100, 1000, Fade(GOLD, alphaNUM3));
+                } else if (alphaNUM2 < 1) {
+                    if (alphaNUM3 == 1) alphaNUM3 -= 0.9f;
+                    if (alphaNUM2 < 1) alphaNUM2 += 0.02f;
+                    DrawText(StartingTWO, 700, 100, 1000, Fade(GOLD, alphaNUM2));
+                } else if (alphaNUM1 < 1) {
+                    if (alphaNUM2 == 1) alphaNUM2 -= 0.9f;
+                    if (alphaNUM1 < 1) alphaNUM1 += 0.02f;
+                    DrawText(StartingONE, 800, 100, 1000, Fade(GOLD, alphaNUM1));
+                } else if (alphaGO < 1) {
+                    if (alphaNUM1 == 1) alphaNUM1 -= 0.9f;
+                    if (alphaGO < 1) alphaGO += 0.01f;
+                    DrawText(StartingGO, 300, 100, 1000, Fade(GOLD, alphaGO));
+                } else {
+                    normalScreen = true;
+                }
+                
+
+            }
+            
+            if (normalScreen) {
+                
             }
 
         EndDrawing();
