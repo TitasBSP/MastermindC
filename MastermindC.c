@@ -8,12 +8,12 @@ float alphaMain = 0.0f;
 
 int main(void)
 {
-    bool mainScreen = true;
+    bool mainScreen = false;
     bool gamemodeScreen = false;
     
     bool startingScreen = false;
     
-    bool normalScreen = false;
+    bool normalScreen = true;
     bool advancedScreen = false;
     bool zenScreen = false;
     bool endlessScreen = false;
@@ -112,9 +112,72 @@ int main(void)
     char StartingTWO[2] = "2";
     char StartingONE[2] = "1";
     char StartingGO[3] = "GO";
+
+    // ---------------------- NORMAL MODE GAME -------------------- //
     
+    float DropShadowX = 150;
+    float DropShadowY = 0;
+    Rectangle DropShadow = {DropShadowX, DropShadowY, 900, 1100};
+    float alphaDropShadow = 0.5f;
+    
+    float FocusBarX = 150;
+    float FocusBarY = 900;
+    Rectangle FocusBar = {FocusBarX, FocusBarY, 900, 200};
+    
+    float SelectBarX = 1250;
+    float SelectBarY = 0;
+    Rectangle SelectBar = {SelectBarX, SelectBarY, 600, 1100};
+    
+    float SelectBarTextX = 1275;
+    float SelectBarTextY = 50;
+    float SelectBarTextSize = 100;
+    Vector2 posSelectBarText = {SelectBarTextX, SelectBarTextY};
+    
+    // CIRCLES ON FOCUS BAR
+    
+    float CIRCLE1x = 290;
+    float CIRCLE1y = 990;
+    
+    float CIRCLE2x = 490;
+    float CIRCLE2y = 990;
+    
+    float CIRCLE3x = 695;
+    float CIRCLE3y = 990;
+    
+    float CIRCLE4x = 900;
+    float CIRCLE4y = 990;
+    
+    // CIRCLES ON SELECT BAR - RED, GREEN, BLUE, YELLOW, ORANGE, PINK, GREY, WHITE
+    
+    float CIRCLEredX = 1425;
+    float CIRCLEredY = 275;
+    
+    float CIRCLEgreenX = 1675;
+    float CIRCLEgreenY = 275;  
+    
+    float CIRCLEblueX = 1350;
+    float CIRCLEblueY = 400;  
+    
+    float CIRCLEyellowX = 1350;
+    float CIRCLEyellowY = 400;   
+    
+    float CIRCLEorangeX = 1350;
+    float CIRCLEorangeY = 400;    
+    
+    float CIRCLEpinkX = 1350;
+    float CIRCLEpinkY = 400;  
+    
+    float CIRCLEgreyX = 1350;
+    float CIRCLEgreyY = 400;   
+    
+    float CIRCLEwhiteX = 1350;
+    float CIRCLEwhiteY = 400;
+    
+    float CIRCLEdeleteX = 1450;
+    float CIRCLEdeleteY = 890;
     
     // ---------------------- INITIALIZATION ---------------------- //
+    
     const int screenWidth = 1920;
     const int screenHeight = 1080;
     ToggleBorderlessWindowed();
@@ -256,11 +319,49 @@ int main(void)
                     normalScreen = true;
                 }
                 
-
             }
             
             if (normalScreen) {
                 
+                DrawRectangleRec(DropShadow, Fade(DARKGRAY, alphaDropShadow));
+                
+                // FOCUS BAR
+                DrawRectangleRec(FocusBar, GRAY);        
+                DrawEllipse(CIRCLE1x, CIRCLE1y, 85, 85, Fade(DARKGRAY, alphaDropShadow));
+                DrawEllipseLines(CIRCLE1x, CIRCLE1y, 85, 85, BLACK);
+                DrawEllipseLines(CIRCLE1x, CIRCLE1y, 86, 86, BLACK);
+                DrawEllipseLines(CIRCLE1x, CIRCLE1y, 87, 87, BLACK);
+                
+                DrawEllipse(CIRCLE2x, CIRCLE2y, 85, 85, Fade(DARKGRAY, alphaDropShadow));
+                DrawEllipseLines(CIRCLE2x, CIRCLE2y, 85, 85, BLACK);
+                DrawEllipseLines(CIRCLE2x, CIRCLE2y, 86, 86, BLACK);
+                DrawEllipseLines(CIRCLE2x, CIRCLE2y, 87, 87, BLACK);
+                
+                DrawEllipse(CIRCLE3x, CIRCLE3y, 85, 85, Fade(DARKGRAY, alphaDropShadow));
+                DrawEllipseLines(CIRCLE3x, CIRCLE3y, 85, 85, BLACK);
+                DrawEllipseLines(CIRCLE3x, CIRCLE3y, 86, 86, BLACK);
+                DrawEllipseLines(CIRCLE3x, CIRCLE3y, 87, 87, BLACK);
+                
+                DrawEllipse(CIRCLE4x, CIRCLE4y, 85, 85, Fade(DARKGRAY, alphaDropShadow));
+                DrawEllipseLines(CIRCLE4x, CIRCLE4y, 85, 85, BLACK);
+                DrawEllipseLines(CIRCLE4x, CIRCLE4y, 86, 86, BLACK);
+                DrawEllipseLines(CIRCLE4x, CIRCLE4y, 87, 87, BLACK);
+                
+                // SELECT BAR
+                DrawRectangleRec(SelectBar, DARKGRAY);
+                DrawTextEx(font, Title, posSelectBarText, SelectBarTextSize, 8, WHITE);
+                
+                DrawEllipse(CIRCLEredX, CIRCLEredY, 85, 85, RED);
+                DrawEllipseLines(CIRCLEredX, CIRCLEredY, 85, 85, BLACK);
+                DrawEllipseLines(CIRCLEredX, CIRCLEredY, 86, 86, BLACK);
+                DrawEllipseLines(CIRCLEredX, CIRCLEredY, 87, 87, BLACK);
+
+                DrawEllipse(CIRCLEgreenX, CIRCLEgreenY, 85, 85, GREEN);
+                DrawEllipseLines(CIRCLEgreenX, CIRCLEgreenY, 85, 85, BLACK);
+                DrawEllipseLines(CIRCLEgreenX, CIRCLEgreenY, 86, 86, BLACK);
+                DrawEllipseLines(CIRCLEgreenX, CIRCLEgreenY, 87, 87, BLACK);
+                
+                // KEEP DOING COLORS
             }
 
         EndDrawing();
