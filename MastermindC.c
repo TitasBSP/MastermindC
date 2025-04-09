@@ -151,31 +151,48 @@ int main(void)
     
     float CIRCLEredX = 1425;
     float CIRCLEredY = 275;
+    float alphaRED = 1.0f;
+    
     
     float CIRCLEgreenX = 1675;
-    float CIRCLEgreenY = 275;  
+    float CIRCLEgreenY = 275;
+    float alphaGREEN = 1.0f;
     
-    float CIRCLEblueX = 1350;
-    float CIRCLEblueY = 400;  
+    float CIRCLEblueX = 1425;
+    float CIRCLEblueY = 475;  
+    float alphaBLUE = 1.0f;
     
-    float CIRCLEyellowX = 1350;
-    float CIRCLEyellowY = 400;   
+    float CIRCLEyellowX = 1675;
+    float CIRCLEyellowY = 475;
+    float alphaYELLOW = 1.0f;    
     
-    float CIRCLEorangeX = 1350;
-    float CIRCLEorangeY = 400;    
+    float CIRCLEorangeX = 1425;
+    float CIRCLEorangeY = 675;
+    float alphaORANGE = 1.0f;
     
-    float CIRCLEpinkX = 1350;
-    float CIRCLEpinkY = 400;  
+    float CIRCLEpinkX = 1675;
+    float CIRCLEpinkY = 675;
+    float alphaPINK = 1.0f;    
     
-    float CIRCLEgreyX = 1350;
-    float CIRCLEgreyY = 400;   
+    float CIRCLEgrayX = 1425;
+    float CIRCLEgrayY = 875;
+    float alphaGRAY = 1.0f;    
     
-    float CIRCLEwhiteX = 1350;
-    float CIRCLEwhiteY = 400;
+    float CIRCLEwhiteX = 1675;
+    float CIRCLEwhiteY = 875;
+    float alphaWHITE = 1.0f;
     
-    float CIRCLEdeleteX = 1450;
-    float CIRCLEdeleteY = 890;
+    float CIRCLEdeleteX = 1550;
+    float CIRCLEdeleteY = 1000;
+    float alphaDELETE = 1.0f;
     
+    float deleteRecX = 1540;
+    float deleteRecY = 975;
+    
+    Vector2 delTriang1 = {1550, 975};
+    Vector2 delTriang2 = {1500, 1000};
+    Vector2 delTriang3 = {1550, 1025};
+
     // ---------------------- INITIALIZATION ---------------------- //
     
     const int screenWidth = 1920;
@@ -200,6 +217,8 @@ int main(void)
         bool isHoveringAdvancedBtn = CheckCollisionPointRec(MousePos, invisAdvancedBtn);
         bool isHoveringZenBtn = CheckCollisionPointRec(MousePos, invisZenBtn);
         bool isHoveringEndlessBtn = CheckCollisionPointRec(MousePos, invisEndlessBtn);
+        
+        bool isHoveringColorRed = CheckCollisionPointRec(MousePos, {CIRCLEredX, CIRCLEredY}); // MAKE INVIS RECTANGLES INSTEAD OF THIS!!!!!!!!!!!!!
         
         if (isHoveringPlayBtn && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && mainScreen == true) {
             mainScreen = false;
@@ -254,6 +273,12 @@ int main(void)
             SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
         } else {
             SetMouseCursor(MOUSE_CURSOR_DEFAULT);
+        }
+        
+        if (isHoveringColorRed && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
+            
+        } else if (isHoveringColorRed && gamemodeScreen == false && mainScreen == false) {
+            alphaRED = 0.7f;
         }
 
         // Draw
@@ -351,7 +376,7 @@ int main(void)
                 DrawRectangleRec(SelectBar, DARKGRAY);
                 DrawTextEx(font, Title, posSelectBarText, SelectBarTextSize, 8, WHITE);
                 
-                DrawEllipse(CIRCLEredX, CIRCLEredY, 85, 85, RED);
+                DrawEllipse(CIRCLEredX, CIRCLEredY, 85, 85, Fade(RED, alphaRED));
                 DrawEllipseLines(CIRCLEredX, CIRCLEredY, 85, 85, BLACK);
                 DrawEllipseLines(CIRCLEredX, CIRCLEredY, 86, 86, BLACK);
                 DrawEllipseLines(CIRCLEredX, CIRCLEredY, 87, 87, BLACK);
@@ -360,6 +385,47 @@ int main(void)
                 DrawEllipseLines(CIRCLEgreenX, CIRCLEgreenY, 85, 85, BLACK);
                 DrawEllipseLines(CIRCLEgreenX, CIRCLEgreenY, 86, 86, BLACK);
                 DrawEllipseLines(CIRCLEgreenX, CIRCLEgreenY, 87, 87, BLACK);
+                
+                DrawEllipse(CIRCLEblueX, CIRCLEblueY, 85, 85, BLUE);
+                DrawEllipseLines(CIRCLEblueX, CIRCLEblueY, 85, 85, BLACK);
+                DrawEllipseLines(CIRCLEblueX, CIRCLEblueY, 86, 86, BLACK);
+                DrawEllipseLines(CIRCLEblueX, CIRCLEblueY, 87, 87, BLACK);                
+                
+                DrawEllipse(CIRCLEyellowX, CIRCLEyellowY, 85, 85, YELLOW);
+                DrawEllipseLines(CIRCLEyellowX, CIRCLEyellowY, 85, 85, BLACK);
+                DrawEllipseLines(CIRCLEyellowX, CIRCLEyellowY, 86, 86, BLACK);
+                DrawEllipseLines(CIRCLEyellowX, CIRCLEyellowY, 87, 87, BLACK);                
+                
+                DrawEllipse(CIRCLEorangeX, CIRCLEorangeY, 85, 85, ORANGE);
+                DrawEllipseLines(CIRCLEorangeX, CIRCLEorangeY, 85, 85, BLACK);
+                DrawEllipseLines(CIRCLEorangeX, CIRCLEorangeY, 86, 86, BLACK);
+                DrawEllipseLines(CIRCLEorangeX, CIRCLEorangeY, 87, 87, BLACK);                
+                
+                DrawEllipse(CIRCLEpinkX, CIRCLEpinkY, 85, 85, PINK);
+                DrawEllipseLines(CIRCLEpinkX, CIRCLEpinkY, 85, 85, BLACK);
+                DrawEllipseLines(CIRCLEpinkX, CIRCLEpinkY, 86, 86, BLACK);
+                DrawEllipseLines(CIRCLEpinkX, CIRCLEpinkY, 87, 87, BLACK);                
+                
+                DrawEllipse(CIRCLEgrayX, CIRCLEgrayY, 85, 85, GRAY);
+                DrawEllipseLines(CIRCLEgrayX, CIRCLEgrayY, 85, 85, BLACK);
+                DrawEllipseLines(CIRCLEgrayX, CIRCLEgrayY, 86, 86, BLACK);
+                DrawEllipseLines(CIRCLEgrayX, CIRCLEgrayY, 87, 87, BLACK);                
+                
+                DrawEllipse(CIRCLEwhiteX, CIRCLEwhiteY, 85, 85, WHITE);
+                DrawEllipseLines(CIRCLEwhiteX, CIRCLEwhiteY, 85, 85, BLACK);
+                DrawEllipseLines(CIRCLEwhiteX, CIRCLEwhiteY, 86, 86, BLACK);
+                DrawEllipseLines(CIRCLEwhiteX, CIRCLEwhiteY, 87, 87, BLACK);                
+                
+                DrawEllipse(CIRCLEdeleteX, CIRCLEdeleteY, 55, 55, GRAY);
+                DrawRectangle(deleteRecX, deleteRecY, 50, 50, DARKGRAY);
+                DrawTriangle(delTriang1, delTriang2, delTriang3, DARKGRAY);
+                DrawTextEx(font, "X", (Vector2){1555, 982}, 40, 8, WHITE);
+                DrawEllipseLines(CIRCLEdeleteX, CIRCLEdeleteY, 55, 55, BLACK);
+                DrawEllipseLines(CIRCLEdeleteX, CIRCLEdeleteY, 56, 56, BLACK);
+                DrawEllipseLines(CIRCLEdeleteX, CIRCLEdeleteY, 57, 57, BLACK);
+                
+                
+                
                 
                 // KEEP DOING COLORS
             }
