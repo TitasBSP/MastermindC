@@ -211,6 +211,41 @@ int main(void)
     InitWindow(screenWidth, screenHeight, "Mastermind");
     SetTargetFPS(60);
     
+    // --------------------- GAME LOGIC --------------------------- //
+    
+    
+    // TODO LIST :
+    // create submit button
+    // create all the circles for 8 combinations
+    // make the indicators
+    // make it go up in the focus bars
+    // show if the colors was right or not
+    // random generated combination from engine
+    // finish earlier or later depending if right
+    
+    Color fBarColor1 = Fade(DARKGRAY, alphaDropShadow);
+    Color fBarColor2 = Fade(DARKGRAY, alphaDropShadow);
+    Color fBarColor3 = Fade(DARKGRAY, alphaDropShadow);
+    Color fBarColor4 = Fade(DARKGRAY, alphaDropShadow);
+    
+    Color RedColor = RED;
+    Color GreenColor = GREEN;
+    Color BlueColor = BLUE;
+    Color YellowColor = YELLOW;
+    Color OrangeColor = ORANGE;
+    Color PinkColor = PINK;
+    Color GrayColor = GRAY;
+    Color WhiteColor = WHITE;
+    
+    
+    Color fBarArray[420] = { 
+        fBarColor1, 
+        fBarColor2, 
+        fBarColor3, 
+        fBarColor4     
+    };
+        
+    int currentFCircle = 0;
     
     //--------------------------------------------------------------------------------------
 
@@ -238,7 +273,7 @@ int main(void)
         bool isHoveringColorDelete = CheckCollisionPointRec(MousePos, invisCIRCLEdelete);
         
         // ------------------------- MAIN MENU AND GAMEMODE BUTTON HOVERING ---------------------------- //
-        
+
         if (isHoveringPlayBtn && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && mainScreen == true) {
             mainScreen = false;
             gamemodeScreen = true;
@@ -296,80 +331,92 @@ int main(void)
         
         // --------------------------------- COLOR BUTTON HOVERING --------------------------------- //
         
-        if (isHoveringColorRed && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
-            
-        } else if (isHoveringColorRed && gamemodeScreen == false && mainScreen == false) {
-            alphaRED = 0.7f;
-        } else {
-            alphaRED = 1.0f;
-        }       
+        if (currentFCircle > 4) {
+            currentFCircle--;
+        }
+
         
-        if (isHoveringColorGreen && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
+            if (isHoveringColorRed && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
+                fBarArray[currentFCircle] = RED;
+                currentFCircle++;
+            } else if (isHoveringColorRed && gamemodeScreen == false && mainScreen == false) {
+                alphaRED = 0.7f;
+            } else {
+                alphaRED = 1.0f;
+            }       
             
-        } else if (isHoveringColorGreen && gamemodeScreen == false && mainScreen == false) {
-            alphaGREEN = 0.7f;
-        } else {
-            alphaGREEN = 1.0f;
-        }      
-        
-        if (isHoveringColorBlue && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
+            if (isHoveringColorGreen && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
+                fBarArray[currentFCircle] = GREEN;
+                currentFCircle++;
+            } else if (isHoveringColorGreen && gamemodeScreen == false && mainScreen == false) {
+                alphaGREEN = 0.7f;
+            } else {
+                alphaGREEN = 1.0f;
+            }      
             
-        } else if (isHoveringColorBlue && gamemodeScreen == false && mainScreen == false) {
-            alphaBLUE = 0.7f;
-        } else {
-            alphaBLUE = 1.0f;
-        }           
-        
-        if (isHoveringColorYellow && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
+            if (isHoveringColorBlue && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
+                fBarArray[currentFCircle] = BLUE;
+                currentFCircle++;
+            } else if (isHoveringColorBlue && gamemodeScreen == false && mainScreen == false) {
+                alphaBLUE = 0.7f;
+            } else {
+                alphaBLUE = 1.0f;
+            }           
             
-        } else if (isHoveringColorYellow && gamemodeScreen == false && mainScreen == false) {
-            alphaYELLOW = 0.7f;
-        } else {
-            alphaYELLOW = 1.0f;
-        }           
-        
-        if (isHoveringColorOrange && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
+            if (isHoveringColorYellow && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
+                fBarArray[currentFCircle] = YELLOW;
+                currentFCircle++;
+            } else if (isHoveringColorYellow && gamemodeScreen == false && mainScreen == false) {
+                alphaYELLOW = 0.7f;
+            } else {
+                alphaYELLOW = 1.0f;
+            }           
             
-        } else if (isHoveringColorOrange && gamemodeScreen == false && mainScreen == false) {
-            alphaORANGE = 0.7f;
-        } else {
-            alphaORANGE = 1.0f;
-        }           
-        
-        if (isHoveringColorPink && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
+            if (isHoveringColorOrange && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
+                fBarArray[currentFCircle] = ORANGE;
+                currentFCircle++;
+            } else if (isHoveringColorOrange && gamemodeScreen == false && mainScreen == false) {
+                alphaORANGE = 0.7f;
+            } else {
+                alphaORANGE = 1.0f;
+            }           
             
-        } else if (isHoveringColorPink && gamemodeScreen == false && mainScreen == false) {
-            alphaPINK = 0.7f;
-        } else {
-            alphaPINK = 1.0f;
-        }           
-        
-        if (isHoveringColorGray && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
+            if (isHoveringColorPink && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
+                fBarArray[currentFCircle] = PINK;
+                currentFCircle++;
+            } else if (isHoveringColorPink && gamemodeScreen == false && mainScreen == false) {
+                alphaPINK = 0.7f;
+            } else {
+                alphaPINK = 1.0f;
+            }           
             
-        } else if (isHoveringColorGray && gamemodeScreen == false && mainScreen == false) {
-            alphaGRAY = 0.7f;
-        } else {
-            alphaGRAY = 1.0f;
-        }           
-        
-        if (isHoveringColorWhite && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
+            if (isHoveringColorGray && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
+                fBarArray[currentFCircle] = GRAY;
+                currentFCircle++;
+            } else if (isHoveringColorGray && gamemodeScreen == false && mainScreen == false) {
+                alphaGRAY = 0.7f;
+            } else {
+                alphaGRAY = 1.0f;
+            }           
             
-        } else if (isHoveringColorWhite && gamemodeScreen == false && mainScreen == false) {
-            alphaWHITE = 0.7f;
-        } else {
-            alphaWHITE = 1.0f;
-        }   
-        
-        if (isHoveringColorDelete && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
+            if (isHoveringColorWhite && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
+                fBarArray[currentFCircle] = WHITE;
+                currentFCircle++;
+            } else if (isHoveringColorWhite && gamemodeScreen == false && mainScreen == false) {
+                alphaWHITE = 0.7f;
+            } else {
+                alphaWHITE = 1.0f;
+            }   
             
-        } else if (isHoveringColorDelete && gamemodeScreen == false && mainScreen == false) {
-            alphaDELETE = 0.7f;
-        } else {
-            alphaDELETE = 1.0f;
-        }   
-        
-        // NEXT TIME:
-        // IMPLEMENT LOGIC WHERE LEFT CLICKING ADDS THE COLOR TO FOCUS BAR CIRCLES
+            if (isHoveringColorDelete && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false && currentFCircle > 0) {
+                currentFCircle--;
+                fBarArray[currentFCircle] = Fade(DARKGRAY, alphaDropShadow);    
+            } else if (isHoveringColorDelete && gamemodeScreen == false && mainScreen == false) {
+                alphaDELETE = 0.7f;
+            } else {
+                alphaDELETE = 1.0f;
+            }   
+
 
         // Draw
         //----------------------------------------------------------------------------------
@@ -442,22 +489,22 @@ int main(void)
                 
                 // FOCUS BAR
                 DrawRectangleRec(FocusBar, GRAY);        
-                DrawEllipse(CIRCLE1x, CIRCLE1y, 85, 85, Fade(DARKGRAY, alphaDropShadow));
+                DrawEllipse(CIRCLE1x, CIRCLE1y, 85, 85, fBarArray[0]);
                 DrawEllipseLines(CIRCLE1x, CIRCLE1y, 85, 85, BLACK);
                 DrawEllipseLines(CIRCLE1x, CIRCLE1y, 86, 86, BLACK);
                 DrawEllipseLines(CIRCLE1x, CIRCLE1y, 87, 87, BLACK);
                 
-                DrawEllipse(CIRCLE2x, CIRCLE2y, 85, 85, Fade(DARKGRAY, alphaDropShadow));
+                DrawEllipse(CIRCLE2x, CIRCLE2y, 85, 85, fBarArray[1]);
                 DrawEllipseLines(CIRCLE2x, CIRCLE2y, 85, 85, BLACK);
                 DrawEllipseLines(CIRCLE2x, CIRCLE2y, 86, 86, BLACK);
                 DrawEllipseLines(CIRCLE2x, CIRCLE2y, 87, 87, BLACK);
                 
-                DrawEllipse(CIRCLE3x, CIRCLE3y, 85, 85, Fade(DARKGRAY, alphaDropShadow));
+                DrawEllipse(CIRCLE3x, CIRCLE3y, 85, 85, fBarArray[2]);
                 DrawEllipseLines(CIRCLE3x, CIRCLE3y, 85, 85, BLACK);
                 DrawEllipseLines(CIRCLE3x, CIRCLE3y, 86, 86, BLACK);
                 DrawEllipseLines(CIRCLE3x, CIRCLE3y, 87, 87, BLACK);
                 
-                DrawEllipse(CIRCLE4x, CIRCLE4y, 85, 85, Fade(DARKGRAY, alphaDropShadow));
+                DrawEllipse(CIRCLE4x, CIRCLE4y, 85, 85, fBarArray[3]);
                 DrawEllipseLines(CIRCLE4x, CIRCLE4y, 85, 85, BLACK);
                 DrawEllipseLines(CIRCLE4x, CIRCLE4y, 86, 86, BLACK);
                 DrawEllipseLines(CIRCLE4x, CIRCLE4y, 87, 87, BLACK);
