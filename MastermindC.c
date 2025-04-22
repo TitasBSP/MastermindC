@@ -6,8 +6,60 @@
 
 float alphaMain = 0.0f;
 
+char storedMemoryBarArray[8][5];
+int memBarCount = 0;
+
+int RNGcount = 0;
+char RNGnums[4] = "";
+
+void addCharRNG(char c) {
+    int len = strlen(RNGnums);
+
+    if (len < 4) {  // Ensure there's space for the new char (4 chars + 1 for \0)
+        RNGnums[len] = c;  // add the new char
+        RNGnums[len + 1] = '\0';  // null terminate the string
+    } else {
+        printf("No space left to add another character.\n");
+    }
+}
+
+void addChar(char c) {
+    int len = strlen(storedMemoryBarArray[memBarCount]);
+
+    if (len < 4) {  // Ensure there's space for the new char (4 chars + 1 for \0)
+        storedMemoryBarArray[memBarCount][len] = c;  // add the new char
+        storedMemoryBarArray[memBarCount][len + 1] = '\0';  // null terminate the string
+    } else {
+        printf("No space left to add another character.\n");
+    }
+}
+
+void deleteChar() {
+    int len = strlen(storedMemoryBarArray[memBarCount]);
+
+    if (len == 0) {
+        printf("Nothing to delete.\n");
+        return;
+    }
+
+    storedMemoryBarArray[memBarCount][len - 1] = '\0';  // overwrite last char with null terminator
+}
+
+void RNG(int minNum, int maxNum) {
+    
+    for (int i = 0; i < 4; i++) {
+        int value = rand() % (maxNum - minNum + 1) + minNum;
+        char valueStr[2];
+        sprintf(valueStr, "%d", value);
+        addCharRNG(valueStr[0]);
+    }
+    printf("THE COMBINATION IS: %s\n\n", RNGnums);
+}
+
 int main(void)
 {
+    RNGnums[0] = '\0';
+    
     bool mainScreen = false;
     bool gamemodeScreen = false;
     
@@ -116,6 +168,8 @@ int main(void)
 
     // ---------------------- NORMAL MODE GAME -------------------- //
     
+    float alphaVis = 1.0f;
+    
     float DropShadowX = 150;
     float DropShadowY = 0;
     Rectangle DropShadow = {DropShadowX, DropShadowY, 900, 1100};
@@ -133,6 +187,12 @@ int main(void)
     float SelectBarTextY = 50;
     float SelectBarTextSize = 100;
     Vector2 posSelectBarText = {SelectBarTextX, SelectBarTextY};
+    
+    float SubmitBtnX = 1150;
+    float SubmitBtnY = 990;
+    float alphaSubmit = 1.0f;
+    Rectangle invisSumbitBtn = {SubmitBtnX-50, SubmitBtnY-50, 100, 100};
+    
     
     // CIRCLES ON FOCUS BAR
     
@@ -215,13 +275,8 @@ int main(void)
     
     
     // TODO LIST :
-    // create submit button
-    // create all the circles for 8 combinations
-    // make the indicators
-    // make it go up in the focus bars
-    // show if the colors was right or not
-    // random generated combination from engine
-    // finish earlier or later depending if right
+
+    // FIX RNG NOT WORKING WITH THE GIVEN INPUT
     
     Color fBarColor1 = Fade(DARKGRAY, alphaDropShadow);
     Color fBarColor2 = Fade(DARKGRAY, alphaDropShadow);
@@ -247,6 +302,10 @@ int main(void)
         
     int currentFCircle = 0;
     
+    RNG(1,8);
+    
+    
+    
     //--------------------------------------------------------------------------------------
 
     Font font = LoadFont("pixantiqua.png");
@@ -262,6 +321,8 @@ int main(void)
         bool isHoveringZenBtn = CheckCollisionPointRec(MousePos, invisZenBtn);
         bool isHoveringEndlessBtn = CheckCollisionPointRec(MousePos, invisEndlessBtn);
         
+        bool isHoveringSubmit = CheckCollisionPointRec(MousePos, invisSumbitBtn);
+        
         bool isHoveringColorRed = CheckCollisionPointRec(MousePos, invisCIRCLEred);
         bool isHoveringColorGreen = CheckCollisionPointRec(MousePos, invisCIRCLEgreen);
         bool isHoveringColorBlue = CheckCollisionPointRec(MousePos, invisCIRCLEblue);
@@ -273,6 +334,7 @@ int main(void)
         bool isHoveringColorDelete = CheckCollisionPointRec(MousePos, invisCIRCLEdelete);
         
         // ------------------------- MAIN MENU AND GAMEMODE BUTTON HOVERING ---------------------------- //
+        
 
         if (isHoveringPlayBtn && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && mainScreen == true) {
             mainScreen = false;
@@ -289,7 +351,7 @@ int main(void)
             gamemodeScreen = false;
             startingScreen = true;
             printf("endless.");
-            fflush(stdout);   
+            fflush(stdout);
         } else if (isHoveringNormalBtn && mainScreen == true) {
             SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
         } else {
@@ -335,10 +397,11 @@ int main(void)
             currentFCircle--;
         }
 
-        
             if (isHoveringColorRed && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
                 fBarArray[currentFCircle] = RED;
                 currentFCircle++;
+                addChar('1');
+                
             } else if (isHoveringColorRed && gamemodeScreen == false && mainScreen == false) {
                 alphaRED = 0.7f;
             } else {
@@ -348,6 +411,8 @@ int main(void)
             if (isHoveringColorGreen && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
                 fBarArray[currentFCircle] = GREEN;
                 currentFCircle++;
+                addChar('2');
+                
             } else if (isHoveringColorGreen && gamemodeScreen == false && mainScreen == false) {
                 alphaGREEN = 0.7f;
             } else {
@@ -357,6 +422,8 @@ int main(void)
             if (isHoveringColorBlue && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
                 fBarArray[currentFCircle] = BLUE;
                 currentFCircle++;
+                addChar('3');
+                
             } else if (isHoveringColorBlue && gamemodeScreen == false && mainScreen == false) {
                 alphaBLUE = 0.7f;
             } else {
@@ -366,6 +433,8 @@ int main(void)
             if (isHoveringColorYellow && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
                 fBarArray[currentFCircle] = YELLOW;
                 currentFCircle++;
+                addChar('4');
+                
             } else if (isHoveringColorYellow && gamemodeScreen == false && mainScreen == false) {
                 alphaYELLOW = 0.7f;
             } else {
@@ -375,6 +444,8 @@ int main(void)
             if (isHoveringColorOrange && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
                 fBarArray[currentFCircle] = ORANGE;
                 currentFCircle++;
+                addChar('5');
+                
             } else if (isHoveringColorOrange && gamemodeScreen == false && mainScreen == false) {
                 alphaORANGE = 0.7f;
             } else {
@@ -384,6 +455,8 @@ int main(void)
             if (isHoveringColorPink && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
                 fBarArray[currentFCircle] = PINK;
                 currentFCircle++;
+                addChar('6');
+                
             } else if (isHoveringColorPink && gamemodeScreen == false && mainScreen == false) {
                 alphaPINK = 0.7f;
             } else {
@@ -393,6 +466,8 @@ int main(void)
             if (isHoveringColorGray && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
                 fBarArray[currentFCircle] = GRAY;
                 currentFCircle++;
+                addChar('7');
+                
             } else if (isHoveringColorGray && gamemodeScreen == false && mainScreen == false) {
                 alphaGRAY = 0.7f;
             } else {
@@ -402,6 +477,8 @@ int main(void)
             if (isHoveringColorWhite && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
                 fBarArray[currentFCircle] = WHITE;
                 currentFCircle++;
+                addChar('8');
+                
             } else if (isHoveringColorWhite && gamemodeScreen == false && mainScreen == false) {
                 alphaWHITE = 0.7f;
             } else {
@@ -410,12 +487,34 @@ int main(void)
             
             if (isHoveringColorDelete && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false && currentFCircle > 0) {
                 currentFCircle--;
-                fBarArray[currentFCircle] = Fade(DARKGRAY, alphaDropShadow);    
+                fBarArray[currentFCircle] = Fade(DARKGRAY, alphaDropShadow);
+                deleteChar();
+             
             } else if (isHoveringColorDelete && gamemodeScreen == false && mainScreen == false) {
                 alphaDELETE = 0.7f;
             } else {
                 alphaDELETE = 1.0f;
-            }   
+            }               
+            
+            if (isHoveringSubmit && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false && currentFCircle == 4) {
+     
+                printf("%s", storedMemoryBarArray[memBarCount]);
+                fflush(stdout);
+                
+                if (storedMemoryBarArray[memBarCount] == RNGnums) {
+                    printf("GAME FINISHED");
+                } else {
+                    memBarCount++;
+                }
+                
+
+            } else if (isHoveringSubmit && gamemodeScreen == false && mainScreen == false) {
+                alphaSubmit = 0.5f;
+            } else {
+                alphaSubmit = 0.8f;
+            }
+            
+
 
 
         // Draw
@@ -509,6 +608,8 @@ int main(void)
                 DrawEllipseLines(CIRCLE4x, CIRCLE4y, 86, 86, BLACK);
                 DrawEllipseLines(CIRCLE4x, CIRCLE4y, 87, 87, BLACK);
                 
+
+                
                 // SELECT BAR
                 DrawRectangleRec(SelectBar, DARKGRAY);
                 DrawTextEx(font, Title, posSelectBarText, SelectBarTextSize, 8, WHITE);
@@ -571,6 +672,13 @@ int main(void)
                 DrawRectangleRec(invisCIRCLEdelete, Fade(BLACK, alphaInvis));
                 
                 
+                DrawEllipse(SubmitBtnX, SubmitBtnY, 55, 55, Fade(GREEN, alphaSubmit));
+                DrawEllipseLines(SubmitBtnX, SubmitBtnY, 55, 55, DARKGRAY);
+                DrawEllipseLines(SubmitBtnX, SubmitBtnY, 56, 56, DARKGRAY);
+                DrawEllipseLines(SubmitBtnX, SubmitBtnY, 57, 57, DARKGRAY);
+                DrawTextEx(font, "Submit", (Vector2){SubmitBtnX-50, SubmitBtnY-10}, 30, 4, Fade(WHITE, alphaVis));
+                
+   
             }
 
         EndDrawing();
