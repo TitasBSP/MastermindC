@@ -304,6 +304,107 @@ int main(void)
         fBarColor3, 
         fBarColor4     
     };
+    
+    // over focus bar circles
+    
+    Color tabColorA1 = Fade(DARKGRAY, alphaDropShadow);
+    Color tabColorA2 = Fade(DARKGRAY, alphaDropShadow);
+    Color tabColorA3 = Fade(DARKGRAY, alphaDropShadow);
+    Color tabColorA4 = Fade(DARKGRAY, alphaDropShadow);    
+    
+    Color tabColorB1 = Fade(DARKGRAY, alphaDropShadow);
+    Color tabColorB2 = Fade(DARKGRAY, alphaDropShadow);
+    Color tabColorB3 = Fade(DARKGRAY, alphaDropShadow);
+    Color tabColorB4 = Fade(DARKGRAY, alphaDropShadow);    
+    
+    Color tabColorC1 = Fade(DARKGRAY, alphaDropShadow);
+    Color tabColorC2 = Fade(DARKGRAY, alphaDropShadow);
+    Color tabColorC3 = Fade(DARKGRAY, alphaDropShadow);
+    Color tabColorC4 = Fade(DARKGRAY, alphaDropShadow);    
+    
+    Color tabColorD1 = Fade(DARKGRAY, alphaDropShadow);
+    Color tabColorD2 = Fade(DARKGRAY, alphaDropShadow);
+    Color tabColorD3 = Fade(DARKGRAY, alphaDropShadow);
+    Color tabColorD4 = Fade(DARKGRAY, alphaDropShadow);    
+    
+    Color tabColorE1 = Fade(DARKGRAY, alphaDropShadow);
+    Color tabColorE2 = Fade(DARKGRAY, alphaDropShadow);
+    Color tabColorE3 = Fade(DARKGRAY, alphaDropShadow);
+    Color tabColorE4 = Fade(DARKGRAY, alphaDropShadow);    
+    
+    Color tabColorF1 = Fade(DARKGRAY, alphaDropShadow);
+    Color tabColorF2 = Fade(DARKGRAY, alphaDropShadow);
+    Color tabColorF3 = Fade(DARKGRAY, alphaDropShadow);
+    Color tabColorF4 = Fade(DARKGRAY, alphaDropShadow);    
+    
+    Color tabColorG1 = Fade(DARKGRAY, alphaDropShadow);
+    Color tabColorG2 = Fade(DARKGRAY, alphaDropShadow);
+    Color tabColorG3 = Fade(DARKGRAY, alphaDropShadow);
+    Color tabColorG4 = Fade(DARKGRAY, alphaDropShadow);    
+    
+    Color tabColorH1 = Fade(DARKGRAY, alphaDropShadow);
+    Color tabColorH2 = Fade(DARKGRAY, alphaDropShadow);
+    Color tabColorH3 = Fade(DARKGRAY, alphaDropShadow);
+    Color tabColorH4 = Fade(DARKGRAY, alphaDropShadow);    
+    
+    // Arrays for circle groups
+    
+    Color AtabArray[420] = {
+        tabColorA1,
+        tabColorA2,
+        tabColorA3,
+        tabColorA4
+    };        
+    
+    Color BtabArray[420] = {
+        tabColorB1,
+        tabColorB2,
+        tabColorB3,
+        tabColorB4
+    };    
+    
+    Color CtabArray[420] = {
+        tabColorC1,
+        tabColorC2,
+        tabColorC3,
+        tabColorC4
+    };    
+    
+    Color DtabArray[420] = {
+        tabColorD1,
+        tabColorD2,
+        tabColorD3,
+        tabColorD4
+    };    
+    
+    Color EtabArray[420] = {
+        tabColorE1,
+        tabColorE2,
+        tabColorE3,
+        tabColorE4
+    };    
+    
+    Color FtabArray[420] = {
+        tabColorF1,
+        tabColorF2,
+        tabColorF3,
+        tabColorF4
+    };    
+    
+    Color GtabArray[420] = {
+        tabColorG1,
+        tabColorG2,
+        tabColorG3,
+        tabColorG4
+    };    
+    
+    Color HtabArray[420] = {
+        tabColorH1,
+        tabColorH2,
+        tabColorH3,
+        tabColorH4
+    };    
+    
         
     int currentFCircle = 0;
     
