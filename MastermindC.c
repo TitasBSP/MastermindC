@@ -10,7 +10,7 @@ char storedMemoryBarArray[8][5];
 int memBarCount = 0;
 
 int RNGcount = 0;
-char RNGnums[4] = "";
+char RNGnums[5] = "";
 
 void addCharRNG(char c) {
     int len = strlen(RNGnums);
@@ -28,7 +28,8 @@ void addChar(char c) {
 
     if (len < 4) {  // Ensure there's space for the new char (4 chars + 1 for \0)
         storedMemoryBarArray[memBarCount][len] = c;  // add the new char
-        storedMemoryBarArray[memBarCount][len + 1] = '\0';  // null terminate the string
+        storedMemoryBarArray[memBarCount][4] = '\0';
+        RNGnums[4] = '\0';
     } else {
         printf("No space left to add another character.\n");
     }
@@ -47,8 +48,10 @@ void deleteChar() {
 
 void RNG(int minNum, int maxNum) {
     
+    memset(RNGnums, 0, sizeof(RNGnums));
+    
     for (int i = 0; i < 4; i++) {
-        int value = rand() % (maxNum - minNum + 1) + minNum;
+        int value = (rand() % maxNum) + minNum;
         char valueStr[2];
         sprintf(valueStr, "%d", value);
         addCharRNG(valueStr[0]);
@@ -276,7 +279,9 @@ int main(void)
     
     // TODO LIST :
 
-    // FIX RNG NOT WORKING WITH THE GIVEN INPUT
+    // Make all the circles if wrong
+    // Check if color is correctly placed or selected
+    // Game over if it reaches over 8
     
     Color fBarColor1 = Fade(DARKGRAY, alphaDropShadow);
     Color fBarColor2 = Fade(DARKGRAY, alphaDropShadow);
@@ -304,8 +309,6 @@ int main(void)
     
     RNG(1,8);
     
-    
-    
     //--------------------------------------------------------------------------------------
 
     Font font = LoadFont("pixantiqua.png");
@@ -332,6 +335,9 @@ int main(void)
         bool isHoveringColorGray = CheckCollisionPointRec(MousePos, invisCIRCLEgray);
         bool isHoveringColorWhite = CheckCollisionPointRec(MousePos, invisCIRCLEwhite);
         bool isHoveringColorDelete = CheckCollisionPointRec(MousePos, invisCIRCLEdelete);
+        
+        bool hasSubmitted = false;
+        
         
         // ------------------------- MAIN MENU AND GAMEMODE BUTTON HOVERING ---------------------------- //
         
@@ -496,23 +502,6 @@ int main(void)
                 alphaDELETE = 1.0f;
             }               
             
-            if (isHoveringSubmit && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false && currentFCircle == 4) {
-     
-                printf("%s", storedMemoryBarArray[memBarCount]);
-                fflush(stdout);
-                
-                if (storedMemoryBarArray[memBarCount] == RNGnums) {
-                    printf("GAME FINISHED");
-                } else {
-                    memBarCount++;
-                }
-                
-
-            } else if (isHoveringSubmit && gamemodeScreen == false && mainScreen == false) {
-                alphaSubmit = 0.5f;
-            } else {
-                alphaSubmit = 0.8f;
-            }
             
 
 
@@ -677,6 +666,29 @@ int main(void)
                 DrawEllipseLines(SubmitBtnX, SubmitBtnY, 56, 56, DARKGRAY);
                 DrawEllipseLines(SubmitBtnX, SubmitBtnY, 57, 57, DARKGRAY);
                 DrawTextEx(font, "Submit", (Vector2){SubmitBtnX-50, SubmitBtnY-10}, 30, 4, Fade(WHITE, alphaVis));
+                
+                if (isHoveringSubmit && (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false && currentFCircle == 4)) {
+                
+                    if (strcmp(storedMemoryBarArray[memBarCount], RNGnums) == 0) { // strcmp compares strings from the string.h library, not the usual comparison operator
+                        printf("GAME FINISHED\n");
+                        printf("User Input: %s\n", storedMemoryBarArray[memBarCount]);
+                        printf("Correct Combo: %s\n", RNGnums);
+                        fflush(stdout);
+                        hasSubmitted = true;
+                        
+                        DrawText("GG", 1250, 900, 15, Fade(GOLD, alphaVis));
+                     
+                    } else {
+                        printf("Triggered, incorrect\n");
+                        memBarCount++;
+                    }
+                    
+
+                } else if (isHoveringSubmit && gamemodeScreen == false && mainScreen == false) {
+                    alphaSubmit = 0.5f;
+                } else {
+                    alphaSubmit = 0.8f;
+                }
                 
    
             }
