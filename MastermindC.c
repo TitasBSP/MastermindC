@@ -265,6 +265,12 @@ int main(void)
     Vector2 delTriang2 = {1500, 1000};
     Vector2 delTriang3 = {1550, 1025};
 
+    // CIRCLES ABOVE FOCUSBAR
+    
+    float tabCircleA1X = 400;
+    float tabCircleA1Y = 840;
+    
+    
     // ---------------------- INITIALIZATION ---------------------- //
     
     const int screenWidth = 1920;
@@ -279,7 +285,7 @@ int main(void)
     
     // TODO LIST :
 
-    // Make all the circles if wrong
+    // Redo the damn focus bar array thing
     // Check if color is correctly placed or selected
     // Game over if it reaches over 8
     
@@ -403,7 +409,8 @@ int main(void)
         tabColorH2,
         tabColorH3,
         tabColorH4
-    };    
+    };
+
     
         
     int currentFCircle = 0;
@@ -417,6 +424,16 @@ int main(void)
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
+        
+        bool aTabDone = false;
+        bool bTabDone = false;
+        bool cTabDone = false;
+        bool dTabDone = false;
+        bool eTabDone = false;
+        bool fTabDone = false;
+        bool gTabDone = false;
+        bool hTabDone = false;
+        
         Vector2 MousePos = GetMousePosition();
         bool isHoveringPlayBtn = CheckCollisionPointRec(MousePos, invisPlayBtn);
         
@@ -698,7 +715,78 @@ int main(void)
                 DrawEllipseLines(CIRCLE4x, CIRCLE4y, 86, 86, BLACK);
                 DrawEllipseLines(CIRCLE4x, CIRCLE4y, 87, 87, BLACK);
                 
+                // CIRCLES ABOVE FOCUS
+                
+                // A - H (1)
+                DrawEllipse(tabCircleA1X, tabCircleA1Y, 50, 50, AtabArray[0]), DrawEllipseLines(tabCircleA1X, tabCircleA1Y, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X, tabCircleA1Y, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X, tabCircleA1Y, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X, tabCircleA1Y-110, 50, 50, BtabArray[0]), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-110, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-110, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-110, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X, tabCircleA1Y-220, 50, 50, CtabArray[0]), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-220, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-220, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-220, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X, tabCircleA1Y-330, 50, 50, DtabArray[0]), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-330, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-330, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-330, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X, tabCircleA1Y-440, 50, 50, EtabArray[0]), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-440, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-440, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-440, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X, tabCircleA1Y-550, 50, 50, FtabArray[0]), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-550, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-550, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-550, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X, tabCircleA1Y-660, 50, 50, GtabArray[0]), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-660, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-660, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-660, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X, tabCircleA1Y-770, 50, 50, HtabArray[0]), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-770, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-770, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-770, 53, 53, BLACK);                
+                
+                // A - H (2)
+                DrawEllipse(tabCircleA1X+120, tabCircleA1Y, 50, 50, AtabArray[1]), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+120, tabCircleA1Y-110, 50, 50, BtabArray[1]), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-110, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-110, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-110, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+120, tabCircleA1Y-220, 50, 50, CtabArray[1]), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-220, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-220, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-220, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+120, tabCircleA1Y-330, 50, 50, DtabArray[1]), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-330, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-330, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-330, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+120, tabCircleA1Y-440, 50, 50, EtabArray[1]), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-440, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-440, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-440, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+120, tabCircleA1Y-550, 50, 50, FtabArray[1]), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-550, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-550, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-550, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+120, tabCircleA1Y-660, 50, 50, GtabArray[1]), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-660, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-660, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-660, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+120, tabCircleA1Y-770, 50, 50, HtabArray[1]), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-770, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-770, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-770, 53, 53, BLACK);                
+                
+                // A - H (3)
+                DrawEllipse(tabCircleA1X+240, tabCircleA1Y, 50, 50, AtabArray[2]), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+240, tabCircleA1Y-110, 50, 50, BtabArray[2]), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-110, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-110, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-110, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+240, tabCircleA1Y-220, 50, 50, CtabArray[2]), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-220, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-220, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-220, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+240, tabCircleA1Y-330, 50, 50, DtabArray[2]), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-330, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-330, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-330, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+240, tabCircleA1Y-440, 50, 50, EtabArray[2]), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-440, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-440, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-440, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+240, tabCircleA1Y-550, 50, 50, FtabArray[2]), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-550, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-550, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-550, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+240, tabCircleA1Y-660, 50, 50, GtabArray[2]), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-660, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-660, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-660, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+240, tabCircleA1Y-770, 50, 50, HtabArray[2]), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-770, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-770, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-770, 53, 53, BLACK);               
 
+                // A - H (4)
+                DrawEllipse(tabCircleA1X+360, tabCircleA1Y, 50, 50, AtabArray[3]), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+360, tabCircleA1Y-110, 50, 50, BtabArray[3]), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-110, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-110, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-110, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+360, tabCircleA1Y-220, 50, 50, CtabArray[3]), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-220, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-220, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-220, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+360, tabCircleA1Y-330, 50, 50, DtabArray[3]), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-330, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-330, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-330, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+360, tabCircleA1Y-440, 50, 50, EtabArray[3]), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-440, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-440, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-440, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+360, tabCircleA1Y-550, 50, 50, FtabArray[3]), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-550, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-550, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-550, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+360, tabCircleA1Y-660, 50, 50, GtabArray[3]), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-660, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-660, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-660, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+360, tabCircleA1Y-770, 50, 50, HtabArray[3]), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-770, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-770, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-770, 53, 53, BLACK);
+                
+                
+                
                 
                 // SELECT BAR
                 DrawRectangleRec(SelectBar, DARKGRAY);
@@ -781,7 +869,28 @@ int main(void)
                      
                     } else {
                         printf("Triggered, incorrect\n");
+                        for (int i = 0; i < 4; i++) {
+                            switch (memBarCount[i]) {
+                                case "1":
+                                    AtabArray[i] = RED;
+                                case "2":
+                                    AtabArray[i] = GREEN;
+                                case "3":
+                                    AtabArray[i] = BLUE;
+                                case "4":
+                                    AtabArray[i] = YELLOW;
+                                case "5":
+                                    AtabArray[i] = ORANGE;
+                                case "6":
+                                    AtabArray[i] = PINK;
+                                case "7":
+                                    AtabArray[i] = GRAY;
+                                case "8":
+                                    AtabArray[i] = WHITE;
+                            }
+                        }
                         memBarCount++;
+                        
                     }
                     
 
