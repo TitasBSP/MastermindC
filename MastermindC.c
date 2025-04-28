@@ -411,6 +411,16 @@ int main(void)
         tabColorH4
     };
 
+    Color tabArray[4][9] = {
+        {tabColorA1, tabColorA2, tabColorA3, tabColorA4},
+        {tabColorB1, tabColorB2, tabColorB3, tabColorB4},
+        {tabColorC1, tabColorC2, tabColorC3, tabColorC4},
+        {tabColorD1, tabColorD2, tabColorD3, tabColorD4},
+        {tabColorE1, tabColorE2, tabColorE3, tabColorE4},
+        {tabColorF1, tabColorF2, tabColorF3, tabColorF4},
+        {tabColorG1, tabColorG2, tabColorG3, tabColorG4},
+        {tabColorH1, tabColorH2, tabColorH3, tabColorH4},
+    };
     
         
     int currentFCircle = 0;
@@ -869,27 +879,16 @@ int main(void)
                      
                     } else {
                         printf("Triggered, incorrect\n");
-                        for (int i = 0; i < 4; i++) {
-                            switch (memBarCount[i]) {
-                                case "1":
-                                    AtabArray[i] = RED;
-                                case "2":
-                                    AtabArray[i] = GREEN;
-                                case "3":
-                                    AtabArray[i] = BLUE;
-                                case "4":
-                                    AtabArray[i] = YELLOW;
-                                case "5":
-                                    AtabArray[i] = ORANGE;
-                                case "6":
-                                    AtabArray[i] = PINK;
-                                case "7":
-                                    AtabArray[i] = GRAY;
-                                case "8":
-                                    AtabArray[i] = WHITE;
-                            }
-                        }
                         memBarCount++;
+                        
+                        int tabCount = 0;
+                        int tabRaiser = 0;
+                        if (tabCount == 4 || tabCount == 8 || tabCount == 12 || tabCount == 16 || tabCount == 20 || tabCount == 24 || tabCount == 28 || tabCount == 32) {
+                            for (i = 0; i < 4; i++) {
+                               
+                            }
+                            tabRaiser++;
+                        }
                         
                     }
                     
