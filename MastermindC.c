@@ -6,7 +6,7 @@
 
 float alphaMain = 0.0f;
 
-char storedMemoryBarArray[8][5];
+char storedMemoryBarArray[5][9];
 int memBarCount = 0;
 
 int RNGcount = 0;
@@ -57,6 +57,18 @@ void RNG(int minNum, int maxNum) {
         addCharRNG(valueStr[0]);
     }
     printf("THE COMBINATION IS: %s\n\n", RNGnums);
+}
+
+const char* ColorName(Color c) {
+    if (memcmp(&c, &RED, sizeof(Color)) == 0) return "RED";
+    if (memcmp(&c, &GREEN, sizeof(Color)) == 0) return "GREEN";
+    if (memcmp(&c, &BLUE, sizeof(Color)) == 0) return "BLUE";
+    if (memcmp(&c, &YELLOW, sizeof(Color)) == 0) return "YELLOW";
+    if (memcmp(&c, &ORANGE, sizeof(Color)) == 0) return "ORANGE";
+    if (memcmp(&c, &PINK, sizeof(Color)) == 0) return "PINK";
+    if (memcmp(&c, &GRAY, sizeof(Color)) == 0) return "GRAY";
+    if (memcmp(&c, &WHITE, sizeof(Color)) == 0) return "WHITE";
+    return "UNKNOWN";
 }
 
 int main(void)
@@ -285,7 +297,7 @@ int main(void)
     
     // TODO LIST :
 
-    // Redo the damn focus bar array thing
+    // Make debug for colors work, check arrays and such, make colors appear
     // Check if color is correctly placed or selected
     // Game over if it reaches over 8
     
@@ -411,7 +423,7 @@ int main(void)
         tabColorH4
     };
 
-    Color tabArray[4][9] = {
+    Color tabArray[9][5] = {
         {tabColorA1, tabColorA2, tabColorA3, tabColorA4},
         {tabColorB1, tabColorB2, tabColorB3, tabColorB4},
         {tabColorC1, tabColorC2, tabColorC3, tabColorC4},
@@ -878,18 +890,46 @@ int main(void)
                         DrawText("GG", 1250, 900, 15, Fade(GOLD, alphaVis));
                      
                     } else {
-                        printf("Triggered, incorrect\n");
-                        memBarCount++;
+                        printf("User Input: %s\n", storedMemoryBarArray[memBarCount]);
+                        fBarArray[0] = Fade(DARKGRAY, alphaDropShadow), fBarArray[1] = Fade(DARKGRAY, alphaDropShadow), fBarArray[2] = Fade(DARKGRAY, alphaDropShadow), fBarArray[3] = Fade(DARKGRAY, alphaDropShadow);
                         
                         int tabCount = 0;
                         int tabRaiser = 0;
-                        if (tabCount == 4 || tabCount == 8 || tabCount == 12 || tabCount == 16 || tabCount == 20 || tabCount == 24 || tabCount == 28 || tabCount == 32) {
-                            for (i = 0; i < 4; i++) {
-                               
+                        for (int i = 0; i < 4; i++) {                          
+                            switch (storedMemoryBarArray[i][tabRaiser]) {
+                                case '1':
+                                    tabArray[tabCount][i] = RED;
+                                    break;
+                                case '2':
+                                    tabArray[tabCount][i] = GREEN;
+                                    break;
+                                case '3':
+                                    tabArray[tabCount][i] = BLUE;
+                                    break;
+                                case '4':
+                                    tabArray[tabCount][i] = YELLOW;
+                                    break;
+                                case '5':
+                                    tabArray[tabCount][i] = ORANGE;
+                                    break;
+                                case '6':
+                                    tabArray[tabCount][i] = PINK;
+                                    break;
+                                case '7':
+                                    tabArray[tabCount][i] = GRAY;
+                                    break;
+                                case '8':
+                                    tabArray[tabCount][i] = WHITE;
+                                    break;
                             }
-                            tabRaiser++;
+                            printf("tabArray[0][%d]: %d %d %d %d (R, G, B, A)\n", i, tabArray[0][i].r, tabArray[0][i].g, tabArray[0][i].b, tabArray[0][i].a);
                         }
+                        printf("Triggered, incorrect\n");
+                        fflush(stdout);
                         
+                        memBarCount++;
+                        tabCount++;
+                        tabRaiser++;
                     }
                     
 
