@@ -285,6 +285,8 @@ int main(void)
     float guessCircleA1X = 880;
     float guessCircleA1Y = 820;
     
+    float alphaHalfVis = 0.75f;
+    
     // ---------------------- INITIALIZATION ---------------------- //
     
     const int screenWidth = 1920;
@@ -297,12 +299,8 @@ int main(void)
     
     
     // TODO LIST :
-
-    // Check if color is correctly placed or selected
-        // Define circles
-        // Make ifs that compare to the correct combination (RNGnums)
-        // White means that the color is correct but misplaced, red means that the both and the color and position are correct.
-    // Game over if it reaches over 8
+    
+    // Make game go back to main menu after everything
     // Smooth animation for showing colors, defined alphas, just make it work
     
     Color fBarColor1 = Fade(DARKGRAY, alphaDropShadow);
@@ -455,6 +453,8 @@ int main(void)
     //--------------------------------------------------------------------------------------
 
     Font font = LoadFont("pixantiqua.png");
+    bool hasSubmitted = false;
+    bool gameOver = false;
     
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
@@ -479,8 +479,8 @@ int main(void)
         bool isHoveringColorWhite = CheckCollisionPointRec(MousePos, invisCIRCLEwhite);
         bool isHoveringColorDelete = CheckCollisionPointRec(MousePos, invisCIRCLEdelete);
         
-        bool hasSubmitted = false;
-        
+        bool matchedRNG[4] = {false};
+        bool matchedGUESS[4] = {false};
         
         // ------------------------- MAIN MENU AND GAMEMODE BUTTON HOVERING ---------------------------- //
         
@@ -976,8 +976,6 @@ int main(void)
                         printf("Correct Combo: %s\n", RNGnums);
                         fflush(stdout);
                         hasSubmitted = true;
-                        
-                        DrawText("GG", 1250, 900, 15, Fade(GOLD, alphaVis));
                      
                     } else {
                         printf("User Input: %s\n", storedMemoryBarArray[memBarCount]);
@@ -990,44 +988,62 @@ int main(void)
                             switch (storedMemoryBarArray[memBarCount][i]) {
                                 case '1':
                                     tabArray[memBarCount][i] = Fade(RED, tabAlphaArray[memBarCount]);
-                                    usleep(250000); // Sleep for 250ms
                                     break;
                                 case '2':
                                     tabArray[memBarCount][i] = Fade(GREEN, tabAlphaArray[memBarCount]);
-                                    usleep(250000);
                                     break;
                                 case '3':
                                     tabArray[memBarCount][i] = Fade(BLUE, tabAlphaArray[memBarCount]);
-                                    usleep(250000);
                                     break;
                                 case '4':
                                     tabArray[memBarCount][i] = Fade(YELLOW, tabAlphaArray[memBarCount]);
-                                    usleep(250000);
                                     break;
                                 case '5':
                                     tabArray[memBarCount][i] = Fade(ORANGE, tabAlphaArray[memBarCount]);
-                                    usleep(250000);
                                     break;
                                 case '6':
                                     tabArray[memBarCount][i] = Fade(PINK, tabAlphaArray[memBarCount]);
-                                    usleep(250000);
                                     break;
                                 case '7':
                                     tabArray[memBarCount][i] = Fade(GRAY, tabAlphaArray[memBarCount]);
-                                    usleep(250000);
                                     break;
                                 case '8':
                                     tabArray[memBarCount][i] = Fade(WHITE, tabAlphaArray[memBarCount]);
-                                    usleep(250000);
                                     break;
                             }
-                               
+                            if (storedMemoryBarArray[memBarCount][i] == RNGnums[i]) {
+                                guessArray[memBarCount][i] = RED;
+                                matchedRNG[i] = true;
+                                matchedGUESS[i] = true;
+                            } else if (!matchedGUESS[i]) {
+                                bool queried = false;
+                                for (int j = 0; j < 4; j++) {
+                                    if (!matchedRNG[j] && storedMemoryBarArray[memBarCount][i] == RNGnums[j]) {
+                                        guessArray[memBarCount][i] = WHITE;
+                                        matchedRNG[j] = true;
+                                        matchedGUESS[i] = true;
+                                        queried = true;
+                                        break;
+                                    }
+                                }
+                                if (!queried) {
+                                    guessArray[memBarCount][i] = Fade(DARKGRAY, alphaDropShadow);
+                                }
+                            }
+                            
                             printf("tabArray[%d][%d]: %d %d %d %d (R, G, B, A)\n",
                                    memBarCount, i,
                                    tabArray[memBarCount][i].r,
                                    tabArray[memBarCount][i].g,
                                    tabArray[memBarCount][i].b,
                                    tabArray[memBarCount][i].a);
+                                   
+                            printf("guessArray[%d][%d] color: R:%d G:%d B:%d A:%d\n", memBarCount, i,
+                                    guessArray[memBarCount][i].r,
+                                    guessArray[memBarCount][i].g,
+                                    guessArray[memBarCount][i].b,
+                                    guessArray[memBarCount][i].a);
+                           
                         }
                         printf("Triggered, incorrect\n");
                         printf("NO. %d %f\n", memBarCount, tabAlphaArray[memBarCount]);
@@ -1040,22 +1056,29 @@ int main(void)
                         if (tabAlphaArray[memBarCount] < 1) tabAlphaArray[memBarCount] += 0.02f; // change this line later
                         if (memBarCount >= 8) {
                             if (strcmp(storedMemoryBarArray[memBarCount], RNGnums) != 0) {
-                                printf("FUCK YOU, bitch. %d\n", memBarCount);
-                                CloseWindow();
-                                fflush(stdout);   
+                                gameOver = true;
                             }
                         }
                         
                     }
                     
-
                 } else if (isHoveringSubmit && gamemodeScreen == false && mainScreen == false) {
                     alphaSubmit = 0.5f;
                 } else {
                     alphaSubmit = 0.8f;
                 }
                 
-   
+                if (hasSubmitted) {
+                    DrawRectangle(0, 0, 2000, 2000, Fade(BLACK, alphaHalfVis));
+                    DrawText("MYSTERY", 450, 350, 200, Fade(GOLD, alphaVis));
+                    DrawText("SOLVED", 520, 550, 200, Fade(GOLD, alphaVis));
+                }
+                
+                if (gameOver) {
+                    DrawRectangle(0, 0, 2000, 2000, Fade(BLACK, alphaHalfVis));
+                    DrawText("GAME", 640, 350, 200, Fade(GOLD, alphaVis));
+                    DrawText("OVER", 630, 550, 200, Fade(GOLD, alphaVis));   
+                }
             }
 
         EndDrawing();
