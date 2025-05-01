@@ -208,6 +208,7 @@ int main(void)
     float alphaSubmit = 1.0f;
     Rectangle invisSumbitBtn = {SubmitBtnX-50, SubmitBtnY-50, 100, 100};
     
+    float alphaBtnFadeIn = 0.0f;
     
     // CIRCLES ON FOCUS BAR
     
@@ -287,6 +288,11 @@ int main(void)
     
     float alphaHalfVis = 0.75f;
     
+    Vector2 posRetryFinish = {1080, 645};
+    Vector2 posRetryFinishBlack = {1082, 650};
+    Vector2 posMainFinish = {390, 655};
+    Vector2 posMainFinishBlack = {394, 660};
+    
     // ---------------------- INITIALIZATION ---------------------- //
     
     const int screenWidth = 1920;
@@ -300,7 +306,7 @@ int main(void)
     
     // TODO LIST :
     
-    // Make game go back to main menu after everything
+    // Make game go back to main menu after everything, reset all stats
     // Smooth animation for showing colors, defined alphas, just make it work
     
     Color fBarColor1 = Fade(DARKGRAY, alphaDropShadow);
@@ -1067,18 +1073,29 @@ int main(void)
                 } else {
                     alphaSubmit = 0.8f;
                 }
-                
+
                 if (hasSubmitted) {
-                    DrawRectangle(0, 0, 2000, 2000, Fade(BLACK, alphaHalfVis));
-                    DrawText("MYSTERY", 450, 350, 200, Fade(GOLD, alphaVis));
-                    DrawText("SOLVED", 520, 550, 200, Fade(GOLD, alphaVis));
+                    normalScreen = false;
                 }
-                
+               
                 if (gameOver) {
                     DrawRectangle(0, 0, 2000, 2000, Fade(BLACK, alphaHalfVis));
                     DrawText("GAME", 640, 350, 200, Fade(GOLD, alphaVis));
                     DrawText("OVER", 630, 550, 200, Fade(GOLD, alphaVis));   
                 }
+            }
+            
+            if (!normalScreen && !gamemodeScreen && !mainScreen) {
+                if (alphaBtnFadeIn < 1) alphaBtnFadeIn += 0.03f;
+                DrawRectangle(0, 0, 2000, 2000, Fade(BLACK, alphaHalfVis));
+                DrawText("MYSTERY", 420, 150, 200, Fade(GOLD, alphaVis));
+                DrawText("SOLVED", 500, 350, 200, Fade(GOLD, alphaVis));
+                DrawEllipse(610, 700, 250, 100, Fade(GOLD, alphaBtnFadeIn));
+                DrawEllipse(1210, 700, 250, 100, Fade(GOLD, alphaBtnFadeIn));   
+                DrawTextEx(font, "Retry", posRetryFinishBlack, 103, 10, Fade(BLACK, alphaBtnFadeIn));
+                DrawTextEx(font, "Retry", posRetryFinish, 100, 10, Fade(WHITE, alphaBtnFadeIn));
+                DrawTextEx(font, "Main Menu", posMainFinishBlack, 80, 10, Fade(BLACK, alphaBtnFadeIn));
+                DrawTextEx(font, "Main Menu", posMainFinish, 80, 10, Fade(WHITE, alphaBtnFadeIn));
             }
 
         EndDrawing();
