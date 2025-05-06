@@ -12,6 +12,12 @@ int memBarCount = 0;
 int RNGcount = 0;
 char RNGnums[5] = "";
 
+float alphaHalfVis = 0.5f;
+
+double recentSpawnTime = 0;
+double spawnInterval = 5.0;
+
+
 void addCharRNG(char c) {
     int len = strlen(RNGnums);
 
@@ -71,8 +77,17 @@ const char* ColorName(Color c) {
     return "UNKNOWN";
 }
 
+void RecSpawnRNG() {
+    int RNGsize = (rand() % 800) + 50;    
+    int Yvalue = (rand() % 1080) + 1;
+    
+    DrawEllipse(0, Yvalue, RNGsize, RNGsize, Fade(WHITE, alphaHalfVis)); 
+}
+
 int main(void)
 {
+    
+    double currentTime = GetTime();
     RNGnums[0] = '\0';
     
     bool mainScreen = false;
@@ -286,8 +301,6 @@ int main(void)
     float guessCircleA1X = 880;
     float guessCircleA1Y = 820;
     
-    float alphaHalfVis = 0.75f;
-    
     Vector2 posRetryFinish = {1080, 645};
     Vector2 posRetryFinishBlack = {1082, 650};
     Vector2 posMainFinish = {390, 655};
@@ -295,6 +308,7 @@ int main(void)
     
     Rectangle invisRetry = {980, 595, 450, 200};
     Rectangle invisMainMenu = {380, 595, 450, 200};
+    
     
     // ---------------------- INITIALIZATION ---------------------- //
     
@@ -309,8 +323,6 @@ int main(void)
     
     // TODO LIST :
     
-    // Make game go back to main menu after everything
-    // Smooth animation for showing colors, defined alphas, just make it work
     // Beautiful background, squares walking, spawned in by RNG
     // Music
     
@@ -670,7 +682,7 @@ int main(void)
             ClearBackground(BLACK);
             
             if (mainScreen) {
-                if (alphaMain < 1) alphaMain += 0.01f;
+                if (alphaMain < 1) alphaMain += 0.03f;
                 DrawTextEx(font, Title, posTitle, TitleSize, 15, Fade(GOLD, alphaMain)); // OBS! Order of operators: (Font var, string var, position var, SIZE, KERNING, COLOR);
                 DrawEllipse(PlayBtnX, PlayBtnY, 250, 100, Fade(GOLD, alphaMain));
                 DrawRectangleRec(invisPlayBtn, Fade(WHITE, alphaInvis));
@@ -982,6 +994,8 @@ int main(void)
                 DrawEllipseLines(SubmitBtnX, SubmitBtnY, 57, 57, DARKGRAY);
                 DrawTextEx(font, "Submit", (Vector2){SubmitBtnX-50, SubmitBtnY-10}, 30, 4, Fade(WHITE, alphaVis));
                 
+                if (tabAlphaArray[memBarCount] < 1) tabAlphaArray[memBarCount] += 0.02f; // change this line later
+                
                 if (isHoveringSubmit && (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false && currentFCircle == 4)) {
                 
                     if (strcmp(storedMemoryBarArray[memBarCount], RNGnums) == 0) { // strcmp compares strings from the string.h library, not the usual comparison operator
@@ -1084,8 +1098,6 @@ int main(void)
                     alphaSubmit = 0.8f;
                 }
                 
-                if (tabAlphaArray[memBarCount] < 1) tabAlphaArray[memBarCount] += 0.02f; // change this line later
-                
                 if (hasSubmitted) {
                     printf("Have you submitted? %d", hasSubmitted);
                     fflush(stdout);
@@ -1137,7 +1149,40 @@ int main(void)
                     gameOver = false;
                     
                     // Resetting alphas
-                    tabAlphaArray[memBarCount] += 0.0f;
+                    tabAlphaArray[memBarCount] = 0.0f;
+                    alphaBtnFadeIn = 0.0f;
+                    alphaNUM3 = 0.0f; alphaNUM2 = 0.0f; alphaNUM1 = 0.0f; alphaGO = 0.0f;             
+                    
+                    for (int i = 0; i < 5; i++) {
+                        deleteChar();
+                    }
+                    
+                    for (int i = 0; i < 9; i++) {
+                        for (int j = 0; j < 4; j++) {
+                            tabArray[i][j] = Fade(DARKGRAY, alphaDropShadow);
+                            guessArray[i][j] = Fade(DARKGRAY, alphaDropShadow);
+                            storedMemoryBarArray[i][j] = '\0';
+                        }
+                    }     
+                 
+                } else if (isHoveringRetry && gamemodeScreen == false && mainScreen == false) {
+                    SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
+                } else {
+                    SetMouseCursor(MOUSE_CURSOR_DEFAULT);
+                }  
+                
+                if (isHoveringMainMenu && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
+                    hasSubmitted = false;
+                    mainScreen = true;
+                    memBarCount = 0;
+                    RNGcount = 0;
+                    currentFCircle = 0;
+                    gameOver = false;
+                    
+                    // Resetting alphas
+                    alphaMain = 0.0f;
+                    alphaGamemode = 0.0f;
+                    tabAlphaArray[memBarCount] = 0.0f;
                     alphaBtnFadeIn = 0.0f;
                     alphaNUM3 = 0.0f; alphaNUM2 = 0.0f; alphaNUM1 = 0.0f; alphaGO = 0.0f;
                     RNG(1,8);
@@ -1153,11 +1198,9 @@ int main(void)
                             guessArray[i][j] = Fade(DARKGRAY, alphaDropShadow);
                             storedMemoryBarArray[i][j] = '\0';
                         }
-                    }
-                    
-                    
+                    }     
                  
-                } else if (isHoveringRetry && gamemodeScreen == false && mainScreen == false) {
+                } else if (isHoveringMainMenu && gamemodeScreen == false && mainScreen == false) {
                     SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
                 } else {
                     SetMouseCursor(MOUSE_CURSOR_DEFAULT);
