@@ -4,6 +4,8 @@
 #include "stdlib.h"
 #include "unistd.h"
 
+#define max_balls 100
+
 float alphaMain = 0.0f;
 
 char storedMemoryBarArray[9][5];
@@ -13,9 +15,26 @@ int RNGcount = 0;
 char RNGnums[5] = "";
 
 float alphaHalfVis = 0.5f;
+float alphaQuarterVis = 0.25f;
+
+Music backgroundMusic;
+bool musicPlaying = true;
+
+// Global variables for background spawning
 
 double recentSpawnTime = 0;
-double spawnInterval = 5.0;
+double spawnInterval = 1.5;
+
+Vector2 spawnBalls[max_balls];
+float ballSpeed[max_balls];
+int ballRadius[max_balls];
+Color ballColor[max_balls];
+
+int ballCount = 0;
+
+int spawnRNGcolor;
+int screenHeight = 1080;
+
 
 
 void addCharRNG(char c) {
@@ -77,17 +96,72 @@ const char* ColorName(Color c) {
     return "UNKNOWN";
 }
 
-void RecSpawnRNG() {
-    int RNGsize = (rand() % 800) + 50;    
-    int Yvalue = (rand() % 1080) + 1;
+void ballSpawning() {
+    double currentTime = GetTime();
     
-    DrawEllipse(0, Yvalue, RNGsize, RNGsize, Fade(WHITE, alphaHalfVis)); 
+    if ((currentTime - recentSpawnTime >= spawnInterval) && (ballCount < max_balls)) {
+        spawnBalls[ballCount] = (Vector2) {
+            -100, 
+            GetRandomValue(50, screenHeight - 50)
+        };
+        ballRadius[ballCount] = GetRandomValue(60, 125);
+        ballSpeed[ballCount] = 150.0f;
+        
+        spawnRNGcolor = GetRandomValue(1,8);
+        
+        switch (spawnRNGcolor) {
+            case 1:
+                ballColor[ballCount] = Fade(RED, alphaQuarterVis);
+                break;
+            case 2:
+                ballColor[ballCount] = Fade(GREEN, alphaQuarterVis);
+                break;
+            case 3:
+                ballColor[ballCount] = Fade(BLUE, alphaQuarterVis);
+                break;
+            case 4:
+                ballColor[ballCount] = Fade(YELLOW, alphaQuarterVis);
+                break;
+            case 5:
+                ballColor[ballCount] = Fade(ORANGE, alphaQuarterVis);
+                break;
+            case 6:
+                ballColor[ballCount] = Fade(PINK, alphaQuarterVis);
+                break;
+            case 7:
+                ballColor[ballCount] = Fade(GRAY, alphaQuarterVis);
+                break;
+            case 8:
+                ballColor[ballCount] = Fade(WHITE, alphaQuarterVis);
+                break;
+        }
+                
+        ballCount++;
+        recentSpawnTime = currentTime;
+    }    
+    
+}
+
+void initMusic() {
+    InitAudioDevice();
+    
+    backgroundMusic = LoadMusicStream("C:/Users/Elevens/Documents/GitHub/MastermindC/Weird Fishes - Remixed.ogg");
+    
+    PlayMusicStream(backgroundMusic);
+}
+
+void updateSong() {
+    UpdateMusicStream(backgroundMusic);
+}
+
+void stopSong() {
+    UnloadMusicStream(backgroundMusic);
+    CloseAudioDevice();
 }
 
 int main(void)
 {
-    
-    double currentTime = GetTime();
+    initMusic();
     RNGnums[0] = '\0';
     
     bool mainScreen = false;
@@ -323,23 +397,13 @@ int main(void)
     
     // TODO LIST :
     
-    // Beautiful background, squares walking, spawned in by RNG
-    // Music
+    // Music (main menu done), do game now, add a volume changer with keys
+    // Add comments
     
     Color fBarColor1 = Fade(DARKGRAY, alphaDropShadow);
     Color fBarColor2 = Fade(DARKGRAY, alphaDropShadow);
     Color fBarColor3 = Fade(DARKGRAY, alphaDropShadow);
     Color fBarColor4 = Fade(DARKGRAY, alphaDropShadow);
-    
-    Color RedColor = RED;
-    Color GreenColor = GREEN;
-    Color BlueColor = BLUE;
-    Color YellowColor = YELLOW;
-    Color OrangeColor = ORANGE;
-    Color PinkColor = PINK;
-    Color GrayColor = GRAY;
-    Color WhiteColor = WHITE;
-    
     
     Color fBarArray[420] = { 
         fBarColor1, 
@@ -482,6 +546,9 @@ int main(void)
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {  
+        updateSong();
+        float moveTime = GetFrameTime();
+    
         Vector2 MousePos = GetMousePosition();
         bool isHoveringPlayBtn = CheckCollisionPointRec(MousePos, invisPlayBtn);
         
@@ -671,10 +738,6 @@ int main(void)
                 alphaDELETE = 1.0f;
             }                   
             
-            
-
-
-
         // Draw
         //----------------------------------------------------------------------------------
         BeginDrawing();
@@ -683,6 +746,17 @@ int main(void)
             
             if (mainScreen) {
                 if (alphaMain < 1) alphaMain += 0.03f;
+                
+                ballSpawning();
+                
+                for (int i = 0; i < ballCount; i++) {
+                    spawnBalls[i].x += ballSpeed[i] * moveTime;
+                }
+                
+                for (int i = 0; i < ballCount; i++) {
+                    DrawCircleV(spawnBalls[i], ballRadius[i], ballColor[i]);
+                }
+                
                 DrawTextEx(font, Title, posTitle, TitleSize, 15, Fade(GOLD, alphaMain)); // OBS! Order of operators: (Font var, string var, position var, SIZE, KERNING, COLOR);
                 DrawEllipse(PlayBtnX, PlayBtnY, 250, 100, Fade(GOLD, alphaMain));
                 DrawRectangleRec(invisPlayBtn, Fade(WHITE, alphaInvis));
@@ -691,6 +765,17 @@ int main(void)
             }
             
             if (gamemodeScreen) {
+                
+                ballSpawning();
+                
+                for (int i = 0; i < ballCount; i++) {
+                    spawnBalls[i].x += ballSpeed[i] * moveTime;
+                }
+                
+                for (int i = 0; i < ballCount; i++) {
+                    DrawCircleV(spawnBalls[i], ballRadius[i], ballColor[i]);
+                }
+                
                 if (alphaGamemode < 1) alphaGamemode += 0.05f;
                 DrawTextEx(font, gamemodeTitle, posGamemodeTitle, gamemodeTitleSize, 12, Fade(GOLD, alphaGamemode));
                 
@@ -741,6 +826,16 @@ int main(void)
             }
             
             if (normalScreen) {
+                
+                ballSpawning();
+                
+                for (int i = 0; i < ballCount; i++) {
+                    spawnBalls[i].x += ballSpeed[i] * moveTime;
+                }
+                
+                for (int i = 0; i < ballCount; i++) {
+                    DrawCircleV(spawnBalls[i], ballRadius[i], ballColor[i]);
+                }
                 
                 DrawRectangleRec(DropShadow, Fade(DARKGRAY, alphaDropShadow));
                 
@@ -1213,6 +1308,7 @@ int main(void)
 
     // De-Initialization
     //--------------------------------------------------------------------------------------
+    stopSong();
     CloseWindow();        // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
 
