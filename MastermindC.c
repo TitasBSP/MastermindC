@@ -3,6 +3,7 @@
 #include "string.h"
 #include "stdlib.h"
 #include "unistd.h"
+#include "math.h"
 
 #define max_balls 100
 
@@ -20,6 +21,12 @@ float alphaQuarterVis = 0.25f;
 Music backgroundMusic;
 bool musicPlaying = true;
 
+// Timer variables
+
+int timerLimit = 500;
+int realTimer;
+int secInterval = 1;
+
 // Global variables for background spawning
 
 double recentSpawnTime = 0;
@@ -35,7 +42,8 @@ int ballCount = 0;
 int spawnRNGcolor;
 int screenHeight = 1080;
 
-
+char timerText[4];
+bool gameOver = false;
 
 void addCharRNG(char c) {
     int len = strlen(RNGnums);
@@ -142,10 +150,25 @@ void ballSpawning() {
     
 }
 
+void Timer() {
+    double stdTimer = GetTime();
+    realTimer = ceil(stdTimer);
+    
+    if (!gameOver && (realTimer - recentSpawnTime >= secInterval)) {
+        if (timerLimit > 0) {
+            timerLimit--;
+            recentSpawnTime = realTimer;
+        }
+
+    }
+    
+    sprintf(timerText, "%d", timerLimit);
+}
+
 void initMusic() {
     InitAudioDevice();
     
-    backgroundMusic = LoadMusicStream("C:/Users/Elevens/Documents/GitHub/MastermindC/Weird Fishes - Remixed.ogg");
+    backgroundMusic = LoadMusicStream("Weird Fishes - Remixed.ogg");
     
     PlayMusicStream(backgroundMusic);
 }
@@ -164,12 +187,12 @@ int main(void)
     initMusic();
     RNGnums[0] = '\0';
     
-    bool mainScreen = false;
+    bool mainScreen = true;
     bool gamemodeScreen = false;
     
     bool startingScreen = false;
     
-    bool normalScreen = true;
+    bool normalScreen = false;
     bool advancedScreen = false;
     bool zenScreen = false;
     bool endlessScreen = false;
@@ -382,6 +405,8 @@ int main(void)
     
     Rectangle invisRetry = {980, 595, 450, 200};
     Rectangle invisMainMenu = {380, 595, 450, 200};
+    
+    Vector2 posTimeRemain = {1065, 60};
     
     
     // ---------------------- INITIALIZATION ---------------------- //
@@ -752,7 +777,7 @@ int main(void)
                 for (int i = 0; i < ballCount; i++) {
                     spawnBalls[i].x += ballSpeed[i] * moveTime;
                 }
-                
+    
                 for (int i = 0; i < ballCount; i++) {
                     DrawCircleV(spawnBalls[i], ballRadius[i], ballColor[i]);
                 }
@@ -827,7 +852,9 @@ int main(void)
             
             if (normalScreen) {
                 
+                
                 ballSpawning();
+               
                 
                 for (int i = 0; i < ballCount; i++) {
                     spawnBalls[i].x += ballSpeed[i] * moveTime;
@@ -837,7 +864,19 @@ int main(void)
                     DrawCircleV(spawnBalls[i], ballRadius[i], ballColor[i]);
                 }
                 
+                Timer();
+     
+                if (timerLimit <= 0) {
+                    gameOver = true;
+                    normalScreen = false;
+                }
+                
                 DrawRectangleRec(DropShadow, Fade(DARKGRAY, alphaDropShadow));
+                
+                DrawRectangle(1060, 30, 175, 120, Fade(GRAY, alphaDropShadow));
+                DrawTextEx(font, "Time Remaining", posTimeRemain, 20, 3, WHITE);
+                DrawText(timerText, 1105, 90, 50, WHITE);
+                
                 
                 // FOCUS BAR
                 DrawRectangleRec(FocusBar, GRAY);        
@@ -1180,8 +1219,12 @@ int main(void)
                         
                       
                         if (memBarCount >= 8) {
-                            if (strcmp(storedMemoryBarArray[memBarCount], RNGnums) != 0) {
+                            if (strcmp(storedMemoryBarArray[memBarCount - 1], RNGnums) != 0) {
                                 gameOver = true;
+                                normalScreen = false;
+                                gamemodeScreen = false;
+                                mainScreen = false;
+                                startingScreen = false;
                             }
                         }
                         
@@ -1206,21 +1249,16 @@ int main(void)
                     
                 }
                
-                if (gameOver) {
-                    DrawRectangle(0, 0, 2000, 2000, Fade(BLACK, alphaHalfVis));
-                    DrawText("GAME", 640, 350, 200, Fade(GOLD, alphaVis));
-                    DrawText("OVER", 630, 550, 200, Fade(GOLD, alphaVis));   
-                }
             }
             
-            if (!normalScreen && !gamemodeScreen && !mainScreen && !startingScreen) {
+            if (!normalScreen && !gamemodeScreen && !mainScreen && !startingScreen && !gameOver) {
                 if (alphaBtnFadeIn < 1) alphaBtnFadeIn += 0.02f;
                 fBarArray[0] = Fade(DARKGRAY, alphaDropShadow), fBarArray[1] = Fade(DARKGRAY, alphaDropShadow), fBarArray[2] = Fade(DARKGRAY, alphaDropShadow), fBarArray[3] = Fade(DARKGRAY, alphaDropShadow);
                 
                 DrawRectangle(0, 0, 2000, 2000, Fade(BLACK, alphaHalfVis));
                 
-                DrawText("MYSTERY", 420, 150, 200, Fade(GOLD, alphaVis));
-                DrawText("SOLVED", 500, 350, 200, Fade(GOLD, alphaVis));
+                DrawText("MYSTERY", 420, 150, 200, Fade(GOLD, alphaBtnFadeIn));
+                DrawText("SOLVED", 500, 350, 200, Fade(GOLD, alphaBtnFadeIn));
                 
                 DrawEllipse(610, 700, 250, 100, Fade(GOLD, alphaBtnFadeIn));
                 DrawEllipse(1210, 700, 250, 100, Fade(GOLD, alphaBtnFadeIn));
@@ -1236,6 +1274,7 @@ int main(void)
                 DrawTextEx(font, "Main Menu", posMainFinish, 80, 10, Fade(WHITE, alphaBtnFadeIn));
 
                 if (isHoveringRetry && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
+                    timerLimit = 500;
                     hasSubmitted = false;
                     startingScreen = true;
                     memBarCount = 0;
@@ -1267,6 +1306,96 @@ int main(void)
                 }  
                 
                 if (isHoveringMainMenu && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
+                    timerLimit = 500;
+                    hasSubmitted = false;
+                    mainScreen = true;
+                    memBarCount = 0;
+                    RNGcount = 0;
+                    currentFCircle = 0;
+                    gameOver = false;
+                    
+                    // Resetting alphas
+                    alphaMain = 0.0f;
+                    alphaGamemode = 0.0f;
+                    tabAlphaArray[memBarCount] = 0.0f;
+                    alphaBtnFadeIn = 0.0f;
+                    alphaNUM3 = 0.0f; alphaNUM2 = 0.0f; alphaNUM1 = 0.0f; alphaGO = 0.0f;
+                    RNG(1,8);
+                    fflush(stdout);                
+                    
+                    for (int i = 0; i < 5; i++) {
+                        deleteChar();
+                    }
+                    
+                    for (int i = 0; i < 9; i++) {
+                        for (int j = 0; j < 4; j++) {
+                            tabArray[i][j] = Fade(DARKGRAY, alphaDropShadow);
+                            guessArray[i][j] = Fade(DARKGRAY, alphaDropShadow);
+                            storedMemoryBarArray[i][j] = '\0';
+                        }
+                    }     
+                 
+                } else if (isHoveringMainMenu && gamemodeScreen == false && mainScreen == false) {
+                    SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
+                } else {
+                    SetMouseCursor(MOUSE_CURSOR_DEFAULT);
+                }  
+            } else if (!normalScreen && !gamemodeScreen && !mainScreen && !startingScreen && gameOver) {
+                if (alphaBtnFadeIn < 1) alphaBtnFadeIn += 0.02f;
+                fBarArray[0] = Fade(DARKGRAY, alphaDropShadow), fBarArray[1] = Fade(DARKGRAY, alphaDropShadow), fBarArray[2] = Fade(DARKGRAY, alphaDropShadow), fBarArray[3] = Fade(DARKGRAY, alphaDropShadow);
+                
+                DrawRectangle(0, 0, 2000, 2000, Fade(BLACK, alphaQuarterVis));
+                
+                DrawText("GAME", 480, 50, 300, Fade(GOLD, alphaBtnFadeIn));
+                DrawText("OVER", 480, 300, 300, Fade(GOLD, alphaBtnFadeIn));
+                
+                DrawEllipse(610, 700, 250, 100, Fade(GOLD, alphaBtnFadeIn));
+                DrawEllipse(1210, 700, 250, 100, Fade(GOLD, alphaBtnFadeIn));
+                
+                DrawRectangleRec(invisRetry, Fade(RED, alphaInvis));
+                DrawRectangleRec(invisMainMenu, Fade(RED, alphaInvis));
+                
+                
+                DrawTextEx(font, "Retry", posRetryFinishBlack, 103, 10, Fade(BLACK, alphaBtnFadeIn));
+                DrawTextEx(font, "Retry", posRetryFinish, 100, 10, Fade(WHITE, alphaBtnFadeIn));
+                
+                DrawTextEx(font, "Main Menu", posMainFinishBlack, 80, 10, Fade(BLACK, alphaBtnFadeIn));
+                DrawTextEx(font, "Main Menu", posMainFinish, 80, 10, Fade(WHITE, alphaBtnFadeIn));
+
+                if (isHoveringRetry && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
+                    timerLimit = 500;
+                    hasSubmitted = false;
+                    startingScreen = true;
+                    memBarCount = 0;
+                    RNGcount = 0;
+                    currentFCircle = 0;
+                    gameOver = false;
+                    
+                    // Resetting alphas
+                    tabAlphaArray[memBarCount] = 0.0f;
+                    alphaBtnFadeIn = 0.0f;
+                    alphaNUM3 = 0.0f; alphaNUM2 = 0.0f; alphaNUM1 = 0.0f; alphaGO = 0.0f;             
+                    
+                    for (int i = 0; i < 5; i++) {
+                        deleteChar();
+                    }
+                    
+                    for (int i = 0; i < 9; i++) {
+                        for (int j = 0; j < 4; j++) {
+                            tabArray[i][j] = Fade(DARKGRAY, alphaDropShadow);
+                            guessArray[i][j] = Fade(DARKGRAY, alphaDropShadow);
+                            storedMemoryBarArray[i][j] = '\0';
+                        }
+                    }     
+                 
+                } else if (isHoveringRetry && gamemodeScreen == false && mainScreen == false) {
+                    SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
+                } else {
+                    SetMouseCursor(MOUSE_CURSOR_DEFAULT);
+                }  
+                
+                if (isHoveringMainMenu && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
+                    timerLimit = 500;
                     hasSubmitted = false;
                     mainScreen = true;
                     memBarCount = 0;
