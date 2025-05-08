@@ -30,6 +30,7 @@ int secInterval = 1;
 // Global variables for background spawning
 
 double recentSpawnTime = 0;
+double timerSpawnTime = 0;
 double spawnInterval = 1.5;
 
 Vector2 spawnBalls[max_balls];
@@ -154,10 +155,10 @@ void Timer() {
     double stdTimer = GetTime();
     realTimer = ceil(stdTimer);
     
-    if (!gameOver && (realTimer - recentSpawnTime >= secInterval)) {
+    if (!gameOver && (realTimer - timerSpawnTime >= secInterval)) {
         if (timerLimit > 0) {
             timerLimit--;
-            recentSpawnTime = realTimer;
+            timerSpawnTime = realTimer;
         }
 
     }
@@ -187,12 +188,12 @@ int main(void)
     initMusic();
     RNGnums[0] = '\0';
     
-    bool mainScreen = true;
+    bool mainScreen = false;
     bool gamemodeScreen = false;
     
     bool startingScreen = false;
     
-    bool normalScreen = false;
+    bool normalScreen = true;
     bool advancedScreen = false;
     bool zenScreen = false;
     bool endlessScreen = false;
@@ -663,8 +664,9 @@ int main(void)
         if (currentFCircle > 4) {
             currentFCircle--;
         }
-
-            if (isHoveringColorRed && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
+            int pressedKey = GetCharPressed();
+            
+            if ((isHoveringColorRed && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) || (pressedKey == '1') && gamemodeScreen == false && mainScreen == false) {
                 fBarArray[currentFCircle] = RED;
                 currentFCircle++;
                 addChar('1');
@@ -675,7 +677,7 @@ int main(void)
                 alphaRED = 1.0f;
             }       
             
-            if (isHoveringColorGreen && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
+            if ((isHoveringColorGreen && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) || (pressedKey == '2') && gamemodeScreen == false && mainScreen == false) {
                 fBarArray[currentFCircle] = GREEN;
                 currentFCircle++;
                 addChar('2');
@@ -686,7 +688,7 @@ int main(void)
                 alphaGREEN = 1.0f;
             }      
             
-            if (isHoveringColorBlue && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
+            if ((isHoveringColorBlue && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) || (pressedKey == '3') && gamemodeScreen == false && mainScreen == false) {
                 fBarArray[currentFCircle] = BLUE;
                 currentFCircle++;
                 addChar('3');
@@ -697,7 +699,7 @@ int main(void)
                 alphaBLUE = 1.0f;
             }           
             
-            if (isHoveringColorYellow && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
+            if ((isHoveringColorYellow && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) || (pressedKey == '4') && gamemodeScreen == false && mainScreen == false) {
                 fBarArray[currentFCircle] = YELLOW;
                 currentFCircle++;
                 addChar('4');
@@ -708,7 +710,7 @@ int main(void)
                 alphaYELLOW = 1.0f;
             }           
             
-            if (isHoveringColorOrange && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
+            if ((isHoveringColorOrange && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) || (pressedKey == '5') && gamemodeScreen == false && mainScreen == false) {
                 fBarArray[currentFCircle] = ORANGE;
                 currentFCircle++;
                 addChar('5');
@@ -719,7 +721,7 @@ int main(void)
                 alphaORANGE = 1.0f;
             }           
             
-            if (isHoveringColorPink && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
+            if ((isHoveringColorPink && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) || (pressedKey == '6') && gamemodeScreen == false && mainScreen == false) {
                 fBarArray[currentFCircle] = PINK;
                 currentFCircle++;
                 addChar('6');
@@ -730,7 +732,7 @@ int main(void)
                 alphaPINK = 1.0f;
             }           
             
-            if (isHoveringColorGray && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
+            if ((isHoveringColorGray && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) || (pressedKey == '7') && gamemodeScreen == false && mainScreen == false) {
                 fBarArray[currentFCircle] = GRAY;
                 currentFCircle++;
                 addChar('7');
@@ -741,7 +743,7 @@ int main(void)
                 alphaGRAY = 1.0f;
             }           
             
-            if (isHoveringColorWhite && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
+            if ((isHoveringColorWhite && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) || (pressedKey == '8') && gamemodeScreen == false && mainScreen == false) {
                 fBarArray[currentFCircle] = WHITE;
                 currentFCircle++;
                 addChar('8');
@@ -752,7 +754,7 @@ int main(void)
                 alphaWHITE = 1.0f;
             }   
             
-            if (isHoveringColorDelete && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false && currentFCircle > 0) {
+            if ((isHoveringColorDelete && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) || (IsKeyPressed(KEY_BACKSPACE)) && gamemodeScreen == false && mainScreen == false && currentFCircle > 0) {
                 currentFCircle--;
                 fBarArray[currentFCircle] = Fade(DARKGRAY, alphaDropShadow);
                 deleteChar();
@@ -818,7 +820,7 @@ int main(void)
                 
                 DrawTextEx(font, ZenText, posZenShdw, ZenTextSize, 8, Fade(BLACK, alphaGamemode));
                 DrawTextEx(font, ZenText, posZenText, ZenTextSize, 8, Fade(WHITE, alphaGamemode));
-                
+                    
                 DrawTextEx(font, EndlessText, posEndlessShdw, EndlessTextSize, 8, Fade(BLACK, alphaGamemode));
                 DrawTextEx(font, EndlessText, posEndlessText, EndlessTextSize, 8, Fade(WHITE, alphaGamemode));
                 
@@ -1068,48 +1070,56 @@ int main(void)
                 DrawEllipseLines(CIRCLEredX, CIRCLEredY, 85, 85, BLACK);
                 DrawEllipseLines(CIRCLEredX, CIRCLEredY, 86, 86, BLACK);
                 DrawEllipseLines(CIRCLEredX, CIRCLEredY, 87, 87, BLACK);
+                DrawText("1", CIRCLEredX-15, CIRCLEredY-45, 100, Fade(BLACK, alphaQuarterVis));
                 DrawRectangleRec(invisCIRCLEred, Fade(BLACK, alphaInvis));
 
                 DrawEllipse(CIRCLEgreenX, CIRCLEgreenY, 85, 85, Fade(GREEN, alphaGREEN));
                 DrawEllipseLines(CIRCLEgreenX, CIRCLEgreenY, 85, 85, BLACK);
                 DrawEllipseLines(CIRCLEgreenX, CIRCLEgreenY, 86, 86, BLACK);
                 DrawEllipseLines(CIRCLEgreenX, CIRCLEgreenY, 87, 87, BLACK);
+                DrawText("2", CIRCLEgreenX-25, CIRCLEgreenY-45, 100, Fade(BLACK, alphaQuarterVis));
                 DrawRectangleRec(invisCIRCLEgreen, Fade(BLACK, alphaInvis));
                 
                 DrawEllipse(CIRCLEblueX, CIRCLEblueY, 85, 85, Fade(BLUE, alphaBLUE));
                 DrawEllipseLines(CIRCLEblueX, CIRCLEblueY, 85, 85, BLACK);
                 DrawEllipseLines(CIRCLEblueX, CIRCLEblueY, 86, 86, BLACK);
-                DrawEllipseLines(CIRCLEblueX, CIRCLEblueY, 87, 87, BLACK);     
+                DrawEllipseLines(CIRCLEblueX, CIRCLEblueY, 87, 87, BLACK);
+                DrawText("3", CIRCLEblueX-25, CIRCLEblueY-45, 100, Fade(BLACK, alphaQuarterVis));                
                 DrawRectangleRec(invisCIRCLEblue, Fade(BLACK, alphaInvis));                
                 
                 DrawEllipse(CIRCLEyellowX, CIRCLEyellowY, 85, 85, Fade(YELLOW, alphaYELLOW));
                 DrawEllipseLines(CIRCLEyellowX, CIRCLEyellowY, 85, 85, BLACK);
                 DrawEllipseLines(CIRCLEyellowX, CIRCLEyellowY, 86, 86, BLACK);
-                DrawEllipseLines(CIRCLEyellowX, CIRCLEyellowY, 87, 87, BLACK);      
+                DrawEllipseLines(CIRCLEyellowX, CIRCLEyellowY, 87, 87, BLACK);  
+                DrawText("4", CIRCLEyellowX-25, CIRCLEyellowY-45, 100, Fade(BLACK, alphaQuarterVis));
                 DrawRectangleRec(invisCIRCLEyellow, Fade(BLACK, alphaInvis));
                 
                 DrawEllipse(CIRCLEorangeX, CIRCLEorangeY, 85, 85, Fade(ORANGE, alphaORANGE));
                 DrawEllipseLines(CIRCLEorangeX, CIRCLEorangeY, 85, 85, BLACK);
                 DrawEllipseLines(CIRCLEorangeX, CIRCLEorangeY, 86, 86, BLACK);
-                DrawEllipseLines(CIRCLEorangeX, CIRCLEorangeY, 87, 87, BLACK);   
+                DrawEllipseLines(CIRCLEorangeX, CIRCLEorangeY, 87, 87, BLACK);
+                DrawText("5", CIRCLEorangeX-25, CIRCLEorangeY-45, 100, Fade(BLACK, alphaQuarterVis));
                 DrawRectangleRec(invisCIRCLEorange, Fade(BLACK, alphaInvis));
                 
                 DrawEllipse(CIRCLEpinkX, CIRCLEpinkY, 85, 85, Fade(PINK, alphaPINK));
                 DrawEllipseLines(CIRCLEpinkX, CIRCLEpinkY, 85, 85, BLACK);
                 DrawEllipseLines(CIRCLEpinkX, CIRCLEpinkY, 86, 86, BLACK);
                 DrawEllipseLines(CIRCLEpinkX, CIRCLEpinkY, 87, 87, BLACK);
+                DrawText("6", CIRCLEpinkX-25, CIRCLEpinkY-45, 100, Fade(BLACK, alphaQuarterVis));
                 DrawRectangleRec(invisCIRCLEpink, Fade(BLACK, alphaInvis));                
                 
                 DrawEllipse(CIRCLEgrayX, CIRCLEgrayY, 85, 85, Fade(GRAY, alphaGRAY));
                 DrawEllipseLines(CIRCLEgrayX, CIRCLEgrayY, 85, 85, BLACK);
                 DrawEllipseLines(CIRCLEgrayX, CIRCLEgrayY, 86, 86, BLACK);
                 DrawEllipseLines(CIRCLEgrayX, CIRCLEgrayY, 87, 87, BLACK);
+                DrawText("7", CIRCLEgrayX-25, CIRCLEgrayY-45, 100, Fade(BLACK, alphaQuarterVis));
                 DrawRectangleRec(invisCIRCLEgray, Fade(BLACK, alphaInvis));                
                 
                 DrawEllipse(CIRCLEwhiteX, CIRCLEwhiteY, 85, 85, Fade(WHITE, alphaWHITE));
                 DrawEllipseLines(CIRCLEwhiteX, CIRCLEwhiteY, 85, 85, BLACK);
                 DrawEllipseLines(CIRCLEwhiteX, CIRCLEwhiteY, 86, 86, BLACK);
                 DrawEllipseLines(CIRCLEwhiteX, CIRCLEwhiteY, 87, 87, BLACK);
+                DrawText("8", CIRCLEwhiteX-25, CIRCLEwhiteY-45, 100, Fade(BLACK, alphaQuarterVis));
                 DrawRectangleRec(invisCIRCLEwhite, Fade(BLACK, alphaInvis));                
                 
                 DrawEllipse(CIRCLEdeleteX, CIRCLEdeleteY, 55, 55, Fade(GRAY, alphaDELETE));
@@ -1130,7 +1140,7 @@ int main(void)
                 
                 if (tabAlphaArray[memBarCount] < 1) tabAlphaArray[memBarCount] += 0.02f; // change this line later
                 
-                if (isHoveringSubmit && (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false && currentFCircle == 4)) {
+                if ((isHoveringSubmit && (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) || (IsKeyPressed(KEY_ENTER)) && gamemodeScreen == false && mainScreen == false && currentFCircle == 4)) {
                 
                     if (strcmp(storedMemoryBarArray[memBarCount], RNGnums) == 0) { // strcmp compares strings from the string.h library, not the usual comparison operator
                         printf("GAME FINISHED\n");
@@ -1281,6 +1291,7 @@ int main(void)
                     RNGcount = 0;
                     currentFCircle = 0;
                     gameOver = false;
+                    RNG(1,8);
                     
                     // Resetting alphas
                     tabAlphaArray[memBarCount] = 0.0f;
@@ -1370,6 +1381,7 @@ int main(void)
                     RNGcount = 0;
                     currentFCircle = 0;
                     gameOver = false;
+                    RNG(1,8);
                     
                     // Resetting alphas
                     tabAlphaArray[memBarCount] = 0.0f;
