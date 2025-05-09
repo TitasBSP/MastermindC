@@ -5,20 +5,28 @@
 #include "unistd.h"
 #include "math.h"
 
-#define max_balls 100
+#define max_balls 10000
 
-float alphaMain = 0.0f;
 
-char storedMemoryBarArray[9][5];
-int memBarCount = 0;
+// ██████╗░██████╗░███████╗░░░░░░░██████╗░░█████╗░███╗░░░███╗███████╗ ██╗░░░██╗░█████╗░██████╗░░██████╗
+// ██╔══██╗██╔══██╗██╔════╝░░░░░░██╔════╝░██╔══██╗████╗░████║██╔════╝ ██║░░░██║██╔══██╗██╔══██╗██╔════╝
+// ██████╔╝██████╔╝█████╗░░█████╗██║░░██╗░███████║██╔████╔██║█████╗░░ ╚██╗░██╔╝███████║██████╔╝╚█████╗░
+// ██╔═══╝░██╔══██╗██╔══╝░░╚════╝██║░░╚██╗██╔══██║██║╚██╔╝██║██╔══╝░░ ░╚████╔╝░██╔══██║██╔══██╗░╚═══██╗
+// ██║░░░░░██║░░██║███████╗░░░░░░╚██████╔╝██║░░██║██║░╚═╝░██║███████╗ ░░╚██╔╝░░██║░░██║██║░░██║██████╔╝
+// ╚═╝░░░░░╚═╝░░╚═╝╚══════╝░░░░░░░╚═════╝░╚═╝░░╚═╝╚═╝░░░░░╚═╝╚══════╝ ░░░╚═╝░░░╚═╝░░╚═╝╚═╝░░╚═╝╚═════╝░
+
+float alphaMain = 0.0f; // Alpha for main menu, fade in 
+
+char storedMemoryBarArray[9][5]; // 2D array which stores the character combinations for the 8 rows of colors which the player sees
+int memBarCount = 0; // Any count here is used for counting up in a loop later on
 
 int RNGcount = 0;
-char RNGnums[5] = "";
+char RNGnums[5] = ""; // Stores RNG numbers from the RNG function
 
 float alphaHalfVis = 0.5f;
 float alphaQuarterVis = 0.25f;
 
-Music backgroundMusic;
+Music backgroundMusic; // Defining a music variable which is used later on
 bool musicPlaying = true;
 
 // Timer variables
@@ -27,7 +35,7 @@ int timerLimit = 500;
 int realTimer;
 int secInterval = 1;
 
-// Global variables for background spawning
+// Global variables for background spawning, aka the balls...
 
 double recentSpawnTime = 0;
 double timerSpawnTime = 0;
@@ -46,26 +54,36 @@ int screenHeight = 1080;
 char timerText[4];
 bool gameOver = false;
 
-void addCharRNG(char c) {
+
+// ███████╗██╗░░░██╗███╗░░██╗░█████╗░████████╗██╗░█████╗░███╗░░██╗░██████╗
+// ██╔════╝██║░░░██║████╗░██║██╔══██╗╚══██╔══╝██║██╔══██╗████╗░██║██╔════╝
+// █████╗░░██║░░░██║██╔██╗██║██║░░╚═╝░░░██║░░░██║██║░░██║██╔██╗██║╚█████╗░
+// ██╔══╝░░██║░░░██║██║╚████║██║░░██╗░░░██║░░░██║██║░░██║██║╚████║░╚═══██╗
+// ██║░░░░░╚██████╔╝██║░╚███║╚█████╔╝░░░██║░░░██║╚█████╔╝██║░╚███║██████╔╝
+// ╚═╝░░░░░░╚═════╝░╚═╝░░╚══╝░╚════╝░░░░╚═╝░░░╚═╝░╚════╝░╚═╝░░╚══╝╚═════╝░
+
+//-------------------------------------------------------------------------------------------|
+
+void addCharRNG(char c) { // Used to add characters in an array which decided the combination
     int len = strlen(RNGnums);
 
-    if (len < 4) {  // Ensure there's space for the new char (4 chars + 1 for \0)
-        RNGnums[len] = c;  // add the new char
-        RNGnums[len + 1] = '\0';  // null terminate the string
+    if (len < 4) {  // Ensure there's space for the new char (4 chars + 1 for '\0')
+        RNGnums[len] = c;  // adds the new char
+        RNGnums[len + 1] = '\0';  // null terminator to ensure nothing more is written.
     } else {
-        printf("No space left to add another character.\n");
+        printf("No space left to add another character.\n"); // Debugger
     }
 }
 
-void addChar(char c) {
+void addChar(char c) { // Used to add characters in an array which displays colors
     int len = strlen(storedMemoryBarArray[memBarCount]);
 
-    if (len < 4) {  // Ensure there's space for the new char (4 chars + 1 for \0)
-        storedMemoryBarArray[memBarCount][len] = c;  // add the new char
+    if (len < 4) {
+        storedMemoryBarArray[memBarCount][len] = c;  
         storedMemoryBarArray[memBarCount][4] = '\0';
         RNGnums[4] = '\0';
     } else {
-        printf("No space left to add another character.\n");
+        printf("No space left to add another character.\n"); // Debugger
     }
 }
 
@@ -73,27 +91,26 @@ void deleteChar() {
     int len = strlen(storedMemoryBarArray[memBarCount]);
 
     if (len == 0) {
-        printf("Nothing to delete.\n");
+        printf("Nothing to delete.\n"); // Debugger
         return;
     }
 
-    storedMemoryBarArray[memBarCount][len - 1] = '\0';  // overwrite last char with null terminator
+    storedMemoryBarArray[memBarCount][len - 1] = '\0';  // overwrite last character with null terminator
 }
 
-void RNG(int minNum, int maxNum) {
+void RNG(int minNum, int maxNum) { // Function for RNG, minNum maxNum is customizable to allow the addition of multiple colors by other coders!
     
-    memset(RNGnums, 0, sizeof(RNGnums));
+    memset(RNGnums, 0, sizeof(RNGnums)); // Resets RNGnums during a new call.
     
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 4; i++) { // Loops 4 times, value is randomized from min to max, in this case 1 - 8.
         int value = (rand() % maxNum) + minNum;
-        char valueStr[2];
-        sprintf(valueStr, "%d", value);
-        addCharRNG(valueStr[0]);
+        char valueStr[2]; // Temporarily added to an array
+        sprintf(valueStr, "%d", value); // Number converted to string to be able to be compared with the row submission
+        addCharRNG(valueStr[0]); // The addCharRNG function is called which appends the characters from one array to another
     }
-    printf("THE COMBINATION IS: %s\n\n", RNGnums);
 }
 
-const char* ColorName(Color c) {
+const char* ColorName(Color c) { // This whole thing is a debugger for colors, they used to be undefined. Leave this in case you're making custom gamemodes!
     if (memcmp(&c, &RED, sizeof(Color)) == 0) return "RED";
     if (memcmp(&c, &GREEN, sizeof(Color)) == 0) return "GREEN";
     if (memcmp(&c, &BLUE, sizeof(Color)) == 0) return "BLUE";
@@ -105,20 +122,20 @@ const char* ColorName(Color c) {
     return "UNKNOWN";
 }
 
-void ballSpawning() {
-    double currentTime = GetTime();
+void ballSpawning() { // Function that handles the background spawning
+    double currentTime = GetTime(); // Defining the time
     
-    if ((currentTime - recentSpawnTime >= spawnInterval) && (ballCount < max_balls)) {
+    if ((currentTime - recentSpawnTime >= spawnInterval) && (ballCount < max_balls)) { // Ensures that the balls are spawned in the correct position and at the right time from the interval
         spawnBalls[ballCount] = (Vector2) {
             -100, 
             GetRandomValue(50, screenHeight - 50)
         };
-        ballRadius[ballCount] = GetRandomValue(60, 125);
-        ballSpeed[ballCount] = 150.0f;
+        ballRadius[ballCount] = GetRandomValue(60, 125); // SIZE-dialer, customize to your liking
+        ballSpeed[ballCount] = 150.0f; // SPEED-dialer, customize to your liking
         
         spawnRNGcolor = GetRandomValue(1,8);
         
-        switch (spawnRNGcolor) {
+        switch (spawnRNGcolor) { // RNG decides the color here
             case 1:
                 ballColor[ballCount] = Fade(RED, alphaQuarterVis);
                 break;
@@ -151,12 +168,12 @@ void ballSpawning() {
     
 }
 
-void Timer() {
-    double stdTimer = GetTime();
-    realTimer = ceil(stdTimer);
+void Timer() { // Timer function when playing the game
+    double stdTimer = GetTime(); // Grabs current time
+    realTimer = ceil(stdTimer); // Rounds the time down for the most optimal experience
     
     if (!gameOver && (realTimer - timerSpawnTime >= secInterval)) {
-        if (timerLimit > 0) {
+        if (timerLimit > 0) { // Countdown...
             timerLimit--;
             timerSpawnTime = realTimer;
         }
@@ -166,7 +183,7 @@ void Timer() {
     sprintf(timerText, "%d", timerLimit);
 }
 
-void initMusic() {
+void initMusic() { // Music initializer, customize your own music in the folder.
     InitAudioDevice();
     
     backgroundMusic = LoadMusicStream("Weird Fishes - Remixed.ogg");
@@ -174,19 +191,31 @@ void initMusic() {
     PlayMusicStream(backgroundMusic);
 }
 
-void updateSong() {
+void updateSong() { // More readable function
     UpdateMusicStream(backgroundMusic);
 }
 
-void stopSong() {
+void stopSong() { // More readable function
     UnloadMusicStream(backgroundMusic);
     CloseAudioDevice();
 }
 
+//-------------------------------------------------------------------------------------------|
+
+
+// ░██████╗░░█████╗░███╗░░░███╗███████╗ ░██████╗████████╗░█████╗░██████╗░████████╗░██████╗ ██╗░░██╗███████╗██████╗░███████╗
+// ██╔════╝░██╔══██╗████╗░████║██╔════╝ ██╔════╝╚══██╔══╝██╔══██╗██╔══██╗╚══██╔══╝██╔════╝ ██║░░██║██╔════╝██╔══██╗██╔════╝
+//  █║░░██╗░███████║██╔████╔██║█████╗░░ ╚█████╗░░░░██║░░░███████║██████╔╝░░░██║░░░╚█████╗░ ███████║█████╗░░██████╔╝█████╗░░
+// ██║░░╚██╗██╔══██║██║╚██╔╝██║██╔══╝░░ ░╚═══██╗░░░██║░░░██╔══██║██╔══██╗░░░██║░░░░╚═══██╗ ██╔══██║██╔══╝░░██╔══██╗██╔══╝░░
+// ╚██████╔╝██║░░██║██║░╚═╝░██║███████╗ ██████╔╝░░░██║░░░██║░░██║██║░░██║░░░██║░░░██████╔╝ ██║░░██║███████╗██║░░██║███████╗
+// ░╚═════╝░╚═╝░░╚═╝╚═╝░░░░░╚═╝╚══════╝ ╚═════╝░░░░╚═╝░░░╚═╝░░╚═╝╚═╝░░╚═╝░░░╚═╝░░░╚═════╝░ ╚═╝░░╚═╝╚══════╝╚═╝░░╚═╝╚══════╝
+
 int main(void)
 {
-    initMusic();
-    RNGnums[0] = '\0';
+    initMusic(); // Music starts here
+    RNGnums[0] = '\0'; // RNG number array is reset
+    
+    // IMPORTANT TOGGLES FOR PLAYTESTING AND EFFICIENCY //
     
     bool mainScreen = false;
     bool gamemodeScreen = false;
@@ -197,6 +226,8 @@ int main(void)
     bool advancedScreen = false;
     bool zenScreen = false;
     bool endlessScreen = false;
+    
+    //-------------------------------------------------//
     
     // ----------------------- TITLE SCREEN ----------------------- //
     
@@ -218,7 +249,7 @@ int main(void)
     Rectangle invisPlayBtn = {PlayInvisX, PlayInvisY, 470, 180};
     float alphaInvis = 0.0f;
     
-    // ---------------------- GAMEMODE CHOICE --------------------- //
+    // ---------------------- GAMEMODE SCREEN --------------------- //
     
     char gamemodeTitle[22] = "CHOOSE YOUR GAMEMODE";
     Vector2 posGamemodeTitle = {75, 100};
@@ -409,7 +440,6 @@ int main(void)
     
     Vector2 posTimeRemain = {1065, 60};
     
-    
     // ---------------------- INITIALIZATION ---------------------- //
     
     const int screenWidth = 1920;
@@ -420,11 +450,23 @@ int main(void)
     
     // --------------------- GAME LOGIC --------------------------- //
     
+    // ████████╗░█████╗░░░░░░░██████╗░░█████╗░ ██╗░░░░░██╗░██████╗████████╗██╗
+    // ╚══██╔══╝██╔══██╗░░░░░░██╔══██╗██╔══██╗ ██║░░░░░██║██╔════╝╚══██╔══╝╚═╝
+    // ░░░██║░░░██║░░██║█████╗██║░░██║██║░░██║ ██║░░░░░██║╚█████╗░░░░██║░░░░░░
+    // ░░░██║░░░██║░░██║╚════╝██║░░██║██║░░██║ ██║░░░░░██║░╚═══██╗░░░██║░░░░░░
+    // ░░░██║░░░╚█████╔╝░░░░░░██████╔╝╚█████╔╝ ███████╗██║██████╔╝░░░██║░░░██╗
+    // ░░░╚═╝░░░░╚════╝░░░░░░░╚═════╝░░╚════╝░ ╚══════╝╚═╝╚═════╝░░░░╚═╝░░░╚═╝
     
-    // TODO LIST :
+    //////////////////////////////////////////////////////////////////////////
+    // 
+    // * Music (main menu done), do game now, add a volume changer with keys  
+    // 
+    // * Add instructions
+    //
+    //
+    //////////////////////////////////////////////////////////////////////////
     
-    // Music (main menu done), do game now, add a volume changer with keys
-    // Add comments
+    // Focus bar colors 
     
     Color fBarColor1 = Fade(DARKGRAY, alphaDropShadow);
     Color fBarColor2 = Fade(DARKGRAY, alphaDropShadow);
@@ -438,7 +480,7 @@ int main(void)
         fBarColor4     
     };
     
-    // over focus bar circles
+    // Tab Circle Colors
     
     Color tabColorA1 = Fade(DARKGRAY, alphaDropShadow);
     Color tabColorA2 = Fade(DARKGRAY, alphaDropShadow);
@@ -480,7 +522,7 @@ int main(void)
     Color tabColorH3 = Fade(DARKGRAY, alphaDropShadow);
     Color tabColorH4 = Fade(DARKGRAY, alphaDropShadow);    
     
-    // Array for circle groups
+    // Array for circle rows
 
     Color tabArray[9][5] = {
         {tabColorA1, tabColorA2, tabColorA3, tabColorA4},
@@ -493,7 +535,7 @@ int main(void)
         {tabColorH1, tabColorH2, tabColorH3, tabColorH4}
     };
     
-    //// Alphas for them
+    //// Alphas for tabs
     
     float AtabAlpha = 0.2f;
     float BtabAlpha = 0.2f;
@@ -506,7 +548,7 @@ int main(void)
     
     float tabAlphaArray[8] = {AtabAlpha, BtabAlpha, CtabAlpha, DtabAlpha, EtabAlpha, FtabAlpha, GtabAlpha, HtabAlpha};
     
-    // Circles beside the input
+    // Circles beside the tab, for guessing
     
     Color guessColorA1 = Fade(DARKGRAY, alphaDropShadow);
     Color guessColorA2 = Fade(DARKGRAY, alphaDropShadow);
@@ -559,21 +601,30 @@ int main(void)
         {guessColorH1, guessColorH2, guessColorH3, guessColorH4}
     };   
         
-    int currentFCircle = 0;
+    int currentFCircle = 0; // Count for changing between tabs
     
-    RNG(1,8);
+    RNG(1,8); // RNG command
     
-    //--------------------------------------------------------------------------------------
+    //--------------------------------------------------------------------------------------|
 
-    Font font = LoadFont("pixantiqua.png");
+    Font font = LoadFont("pixantiqua.png"); // Font loader, customize to your liking
     bool hasSubmitted = false;
     bool gameOver = false;
+
+    // ░██████╗░░█████╗░███╗░░░███╗███████╗ ██╗░░░░░░█████╗░░█████╗░██████╗░
+    // ██╔════╝░██╔══██╗████╗░████║██╔════╝ ██║░░░░░██╔══██╗██╔══██╗██╔══██╗
+    // ██║░░██╗░███████║██╔████╔██║█████╗░░ ██║░░░░░██║░░██║██║░░██║██████╔╝
+    // ██║░░╚██╗██╔══██║██║╚██╔╝██║██╔══╝░░ ██║░░░░░██║░░██║██║░░██║██╔═══╝░
+    // ╚██████╔╝██║░░██║██║░╚═╝░██║███████╗ ███████╗╚█████╔╝╚█████╔╝██║░░░░░
+    // ░╚═════╝░╚═╝░░╚═╝╚═╝░░░░░╚═╝╚══════╝ ╚══════╝░╚════╝░░╚════╝░╚═╝░░░░░
     
-    // Main game loop
-    while (!WindowShouldClose())    // Detect window close button or ESC key
+    while (!WindowShouldClose())  // Detect window close button or ESC key
     {  
-        updateSong();
+        updateSong(); // Updates the song so it stays consistent during gameplay
+        
         float moveTime = GetFrameTime();
+        
+        // BOOLEANS FOR GAME HITBOXES
     
         Vector2 MousePos = GetMousePosition();
         bool isHoveringPlayBtn = CheckCollisionPointRec(MousePos, invisPlayBtn);
@@ -597,6 +648,8 @@ int main(void)
         
         bool isHoveringMainMenu = CheckCollisionPointRec(MousePos, invisMainMenu);
         bool isHoveringRetry = CheckCollisionPointRec(MousePos, invisRetry);
+        
+        // BOOLEANS FOR COLORS
         
         bool matchedRNG[4] = {false};
         bool matchedGUESS[4] = {false};
@@ -666,8 +719,7 @@ int main(void)
         }
             int pressedKey = GetCharPressed();
             
-            if ((isHoveringColorRed && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) || (pressedKey == '1') && gamemodeScreen == false && mainScreen == false) {
-                fBarArray[currentFCircle] = RED;
+            if ((isHoveringColorRed && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) || (pressedKey == '1') && gamemodeScreen == false && mainScreen == false) { // Selecting can be done with both mouse or keyboard inputs
                 currentFCircle++;
                 addChar('1');
                 
@@ -765,13 +817,13 @@ int main(void)
                 alphaDELETE = 1.0f;
             }                   
             
-        // Draw
+        // The visible stuff on screen
         //----------------------------------------------------------------------------------
         BeginDrawing();
 
             ClearBackground(BLACK);
             
-            if (mainScreen) {
+            if (mainScreen) { // Happens under main menu
                 if (alphaMain < 1) alphaMain += 0.03f;
                 
                 ballSpawning();
@@ -791,7 +843,7 @@ int main(void)
                 DrawTextEx(font, PlayText, posPlayText, PlayTextSize, 8, Fade(WHITE, alphaMain));
             }
             
-            if (gamemodeScreen) {
+            if (gamemodeScreen) { // Happens under gamemode menu
                 
                 ballSpawning();
                 
@@ -830,7 +882,7 @@ int main(void)
                 DrawRectangleRec(invisEndlessBtn, Fade(RED, alphaGamemodeBtns));
             }
             
-            if (startingScreen) {
+            if (startingScreen) { // 3-2-1-GO Screen
                 if (alphaNUM3 < 1) {
                     if (alphaNUM3 < 1) alphaNUM3 += 0.02f;
                     DrawText(StartingTHREE, 700, 100, 1000, Fade(GOLD, alphaNUM3));
@@ -852,23 +904,21 @@ int main(void)
                 
             }
             
-            if (normalScreen) {
-                
-                
+            if (normalScreen) { // Normal GAMEMODE code
+        
                 ballSpawning();
-               
-                
-                for (int i = 0; i < ballCount; i++) {
+
+                for (int i = 0; i < ballCount; i++) { // Background moving along the x-axis
                     spawnBalls[i].x += ballSpeed[i] * moveTime;
                 }
                 
-                for (int i = 0; i < ballCount; i++) {
+                for (int i = 0; i < ballCount; i++) { // Drawing the balls
                     DrawCircleV(spawnBalls[i], ballRadius[i], ballColor[i]);
                 }
                 
                 Timer();
      
-                if (timerLimit <= 0) {
+                if (timerLimit <= 0) { // Game over when timer is 0 or less
                     gameOver = true;
                     normalScreen = false;
                 }
@@ -1138,25 +1188,26 @@ int main(void)
                 DrawEllipseLines(SubmitBtnX, SubmitBtnY, 57, 57, DARKGRAY);
                 DrawTextEx(font, "Submit", (Vector2){SubmitBtnX-50, SubmitBtnY-10}, 30, 4, Fade(WHITE, alphaVis));
                 
-                if (tabAlphaArray[memBarCount] < 1) tabAlphaArray[memBarCount] += 0.02f; // change this line later
-                
-                if ((isHoveringSubmit && (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) || (IsKeyPressed(KEY_ENTER)) && gamemodeScreen == false && mainScreen == false && currentFCircle == 4)) {
-                
+                if ((isHoveringSubmit && (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) || (IsKeyPressed(KEY_ENTER)) && gamemodeScreen == false && mainScreen == false && currentFCircle == 4)) { // IF-statement for submit button
+                    
                     if (strcmp(storedMemoryBarArray[memBarCount], RNGnums) == 0) { // strcmp compares strings from the string.h library, not the usual comparison operator
-                        printf("GAME FINISHED\n");
+                        // GAME IS FINISHED IF THE STRINGS ARE IDENTICAL
+                        printf("GAME FINISHED\n"); // Debugger
                         printf("User Input: %s\n", storedMemoryBarArray[memBarCount]);
                         printf("Correct Combo: %s\n", RNGnums);
                         fflush(stdout);
                         hasSubmitted = true;
                      
-                    } else {
+                    } else { // If game is not finished
+                        if (tabAlphaArray[memBarCount] < 1) tabAlphaArray[memBarCount] += 0.02f; // change this line later
                         printf("User Input: %s\n", storedMemoryBarArray[memBarCount]);
                         currentFCircle = 0;
-                        fBarArray[0] = Fade(DARKGRAY, alphaDropShadow), fBarArray[1] = Fade(DARKGRAY, alphaDropShadow), fBarArray[2] = Fade(DARKGRAY, alphaDropShadow), fBarArray[3] = Fade(DARKGRAY, alphaDropShadow);
+                        fBarArray[0] = Fade(DARKGRAY, alphaDropShadow), fBarArray[1] = Fade(DARKGRAY, alphaDropShadow), fBarArray[2] = Fade(DARKGRAY, alphaDropShadow), fBarArray[3] = Fade(DARKGRAY, alphaDropShadow); // Resets the focus bar to be gray
                         
                         int tabCount = 0;
                         int tabRaiser = 0;
-                        for (int i = 0; i < 4; i++) {
+                        
+                        for (int i = 0; i < 4; i++) { // Runs a loop which appends the strings into a tab array above and converts the strings into colors which the player can see
                             switch (storedMemoryBarArray[memBarCount][i]) {
                                 case '1':
                                     tabArray[memBarCount][i] = Fade(RED, tabAlphaArray[memBarCount]);
@@ -1183,13 +1234,13 @@ int main(void)
                                     tabArray[memBarCount][i] = Fade(WHITE, tabAlphaArray[memBarCount]);
                                     break;
                             }
-                            if (storedMemoryBarArray[memBarCount][i] == RNGnums[i]) {
-                                guessArray[memBarCount][i] = RED;
+                            if (storedMemoryBarArray[memBarCount][i] == RNGnums[i]) { // System for deciding if a color is correct and placed right, or if it's correct but the placement is false, or if it's neither
+                                guessArray[memBarCount][i] = RED; // When correctly placed and color is right
                                 matchedRNG[i] = true;
                                 matchedGUESS[i] = true;
                             } else if (!matchedGUESS[i]) {
                                 bool queried = false;
-                                for (int j = 0; j < 4; j++) {
+                                for (int j = 0; j < 4; j++) { // When incorrectly placed but color is right
                                     if (!matchedRNG[j] && storedMemoryBarArray[memBarCount][i] == RNGnums[j]) {
                                         guessArray[memBarCount][i] = WHITE;
                                         matchedRNG[j] = true;
@@ -1198,37 +1249,36 @@ int main(void)
                                         break;
                                     }
                                 }
-                                if (!queried) {
+                                if (!queried) { // When it's neither correctly placed nor color is right
                                     guessArray[memBarCount][i] = Fade(DARKGRAY, alphaDropShadow);
                                     matchedRNG[i] = false;
                                     matchedGUESS[i] = false;   
                                 }
                             }
                             
-                            printf("tabArray[%d][%d]: %d %d %d %d (R, G, B, A)\n",
+                            printf("tabArray[%d][%d]: %d %d %d %d (R, G, B, A)\n", // DEBUGGER for tabs
                                    memBarCount, i,
                                    tabArray[memBarCount][i].r,
                                    tabArray[memBarCount][i].g,
                                    tabArray[memBarCount][i].b,
                                    tabArray[memBarCount][i].a);
                                    
-                            printf("guessArray[%d][%d] color: R:%d G:%d B:%d A:%d\n", memBarCount, i,
+                            printf("guessArray[%d][%d] color: R:%d G:%d B:%d A:%d\n", memBarCount, i, // DEBUGGER for guess dots
                                     guessArray[memBarCount][i].r,
                                     guessArray[memBarCount][i].g,
                                     guessArray[memBarCount][i].b,
                                     guessArray[memBarCount][i].a);
                            
                         }
-                        printf("Triggered, incorrect\n");
+                        printf("Triggered, incorrect\n"); // Debugger for combinations
                         printf("NO. %d %f\n", memBarCount, tabAlphaArray[memBarCount]);
                         fflush(stdout);
                         
                         memBarCount++;
                         tabCount++;
                         tabRaiser++;
-                        
                       
-                        if (memBarCount >= 8) {
+                        if (memBarCount >= 8) { // Game over is triggered if a tab above 8 is opened
                             if (strcmp(storedMemoryBarArray[memBarCount - 1], RNGnums) != 0) {
                                 gameOver = true;
                                 normalScreen = false;
@@ -1246,7 +1296,7 @@ int main(void)
                     alphaSubmit = 0.8f;
                 }
                 
-                if (hasSubmitted) {
+                if (hasSubmitted) { // Confirms level complete when correct combination is submitted
                     printf("Have you submitted? %d", hasSubmitted);
                     fflush(stdout);
                     
@@ -1261,7 +1311,7 @@ int main(void)
                
             }
             
-            if (!normalScreen && !gamemodeScreen && !mainScreen && !startingScreen && !gameOver) {
+            if (!normalScreen && !gamemodeScreen && !mainScreen && !startingScreen && !gameOver) { // LEVEL COMPLETE SCREEN, a lot of resetting...
                 if (alphaBtnFadeIn < 1) alphaBtnFadeIn += 0.02f;
                 fBarArray[0] = Fade(DARKGRAY, alphaDropShadow), fBarArray[1] = Fade(DARKGRAY, alphaDropShadow), fBarArray[2] = Fade(DARKGRAY, alphaDropShadow), fBarArray[3] = Fade(DARKGRAY, alphaDropShadow);
                 
@@ -1283,7 +1333,7 @@ int main(void)
                 DrawTextEx(font, "Main Menu", posMainFinishBlack, 80, 10, Fade(BLACK, alphaBtnFadeIn));
                 DrawTextEx(font, "Main Menu", posMainFinish, 80, 10, Fade(WHITE, alphaBtnFadeIn));
 
-                if (isHoveringRetry && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
+                if (isHoveringRetry && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) { // When clicking retry button
                     timerLimit = 500;
                     hasSubmitted = false;
                     startingScreen = true;
@@ -1316,7 +1366,7 @@ int main(void)
                     SetMouseCursor(MOUSE_CURSOR_DEFAULT);
                 }  
                 
-                if (isHoveringMainMenu && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
+                if (isHoveringMainMenu && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) { // When clicking main menu button
                     timerLimit = 500;
                     hasSubmitted = false;
                     mainScreen = true;
@@ -1351,7 +1401,7 @@ int main(void)
                 } else {
                     SetMouseCursor(MOUSE_CURSOR_DEFAULT);
                 }  
-            } else if (!normalScreen && !gamemodeScreen && !mainScreen && !startingScreen && gameOver) {
+            } else if (!normalScreen && !gamemodeScreen && !mainScreen && !startingScreen && gameOver) { // GAME OVER screen, practically identical except for output
                 if (alphaBtnFadeIn < 1) alphaBtnFadeIn += 0.02f;
                 fBarArray[0] = Fade(DARKGRAY, alphaDropShadow), fBarArray[1] = Fade(DARKGRAY, alphaDropShadow), fBarArray[2] = Fade(DARKGRAY, alphaDropShadow), fBarArray[3] = Fade(DARKGRAY, alphaDropShadow);
                 
