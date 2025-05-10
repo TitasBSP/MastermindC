@@ -16,6 +16,7 @@
 // ╚═╝░░░░░╚═╝░░╚═╝╚══════╝░░░░░░░╚═════╝░╚═╝░░╚═╝╚═╝░░░░░╚═╝╚══════╝ ░░░╚═╝░░░╚═╝░░╚═╝╚═╝░░╚═╝╚═════╝░
 
 float alphaMain = 0.0f; // Alpha for main menu, fade in 
+float alphaDropShadow = 0.5f;
 
 char storedMemoryBarArray[9][5]; // 2D array which stores the character combinations for the 8 rows of colors which the player sees
 int memBarCount = 0; // Any count here is used for counting up in a loop later on
@@ -38,7 +39,7 @@ int secInterval = 1;
 // Instruct variables
 
 double lightSpawnTime = 0;
-double lightSpawnInterval = 1;
+double lightSpawnInterval = 0.5;
 int lightCounter = -1;
 
 // Global variables for background spawning, aka the balls...
@@ -332,18 +333,24 @@ int main(void)
     
     Vector2 posInstruct = {430, 80};
     
+    Rectangle invisIUnderstand = {680, 800, 450, 200};
     
+    Vector2 posIUnderstand = {680, 865};
+    Vector2 posIUnderstandBlack = {685, 866};
     
+    Color instructfBarColor1 = Fade(DARKGRAY, alphaDropShadow);
+    Color instructfBarColor2 = Fade(DARKGRAY, alphaDropShadow);
+    Color instructfBarColor3 = Fade(DARKGRAY, alphaDropShadow);
+    Color instructfBarColor4 = Fade(DARKGRAY, alphaDropShadow);
     
+    Color instructfBarArray[4] = {instructfBarColor1, instructfBarColor2, instructfBarColor3, instructfBarColor4};
     
+    Color instructguessColor1 = Fade(DARKGRAY, alphaDropShadow);
+    Color instructguessColor2 = Fade(DARKGRAY, alphaDropShadow);
+    Color instructguessColor3 = Fade(DARKGRAY, alphaDropShadow);
+    Color instructguessColor4 = Fade(DARKGRAY, alphaDropShadow);
     
-    
-    
-    
-    
-    
-    
-    
+    Color instructguessArray[4] = {instructguessColor1, instructguessColor2, instructguessColor3, instructguessColor4};
     
     // ---------------------- STARTING SCREEN --------------------- //
     
@@ -364,7 +371,6 @@ int main(void)
     float DropShadowX = 150;
     float DropShadowY = 0;
     Rectangle DropShadow = {DropShadowX, DropShadowY, 900, 1100};
-    float alphaDropShadow = 0.5f;
     
     float FocusBarX = 150;
     float FocusBarY = 900;
@@ -472,6 +478,7 @@ int main(void)
     
     Vector2 posTimeRemain = {1065, 60};
     
+    
     // ---------------------- INITIALIZATION ---------------------- //
     
     const int screenWidth = 1920;
@@ -492,9 +499,6 @@ int main(void)
     //////////////////////////////////////////////////////////////////////////
     // 
     // * Music (main menu done), do game now, add a volume changer with keys  
-    // 
-    // * Add instructions
-    //
     //
     //////////////////////////////////////////////////////////////////////////
     
@@ -569,14 +573,14 @@ int main(void)
     
     //// Alphas for tabs
     
-    float AtabAlpha = 0.2f;
-    float BtabAlpha = 0.2f;
-    float CtabAlpha = 0.2f;
-    float DtabAlpha = 0.2f;
-    float EtabAlpha = 0.2f;
-    float FtabAlpha = 0.2f;
-    float GtabAlpha = 0.2f;
-    float HtabAlpha = 0.2f;
+    float AtabAlpha = 1.0f;
+    float BtabAlpha = 1.0f;
+    float CtabAlpha = 1.0f;
+    float DtabAlpha = 1.0f;
+    float EtabAlpha = 1.0f;
+    float FtabAlpha = 1.0f;
+    float GtabAlpha = 1.0f;
+    float HtabAlpha = 1.0f;
     
     float tabAlphaArray[8] = {AtabAlpha, BtabAlpha, CtabAlpha, DtabAlpha, EtabAlpha, FtabAlpha, GtabAlpha, HtabAlpha};
     
@@ -669,6 +673,8 @@ int main(void)
         bool isHoveringZenBtn = CheckCollisionPointRec(MousePos, invisZenBtn);
         bool isHoveringEndlessBtn = CheckCollisionPointRec(MousePos, invisEndlessBtn);
         
+        bool isHoveringIUnderstand = CheckCollisionPointRec(MousePos, invisIUnderstand);
+        
         bool isHoveringSubmit = CheckCollisionPointRec(MousePos, invisSumbitBtn);
         
         bool isHoveringColorRed = CheckCollisionPointRec(MousePos, invisCIRCLEred);
@@ -747,6 +753,19 @@ int main(void)
             SetMouseCursor(MOUSE_CURSOR_DEFAULT);
         }
         
+        if (isHoveringIUnderstand && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false) {
+            instructionScreenNormal = false;
+            startingScreen = true;
+            printf("ready.");
+            fflush(stdout);    
+            currentFCircle = 0;
+            lightCounter = 0;
+        } else if (isHoveringIUnderstand && mainScreen == true) {
+            SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
+        } else {
+            SetMouseCursor(MOUSE_CURSOR_DEFAULT);
+        }
+        
         // --------------------------------- COLOR BUTTON HOVERING --------------------------------- //
         
         if (currentFCircle > 4) {
@@ -755,6 +774,7 @@ int main(void)
             int pressedKey = GetCharPressed();
             
             if ((isHoveringColorRed && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) || (pressedKey == '1') && gamemodeScreen == false && mainScreen == false) { // Selecting can be done with both mouse or keyboard inputs
+                fBarArray[currentFCircle] = RED;
                 currentFCircle++;
                 addChar('1');
                 
@@ -933,45 +953,73 @@ int main(void)
                 
                 if (realLightTime - lightSpawnTime >= lightSpawnInterval) {
                     if (lightCounter >= 0) {
-                        fBarArray[0] = RED;
+                        instructfBarArray[0] = RED;
+                        instructguessArray[0] = RED;
                     }                    
                     if (lightCounter >= 1) {
-                        fBarArray[1] = GREEN;
+                        instructfBarArray[1] = GREEN;
+                        instructguessArray[1] = WHITE;
                     }                   
                     if (lightCounter >= 2) {
-                        fBarArray[2] = BLUE;
+                        instructfBarArray[2] = BLUE;
+                        instructguessArray[2] = WHITE;
                     }                    
                     if (lightCounter >= 3) {
-                        fBarArray[3] = YELLOW;
+                        instructfBarArray[3] = YELLOW;
+                        instructguessArray[3] = RED;
                     }
 
                     if (lightCounter > 3) {
-                        fBarArray[0] = Fade(DARKGRAY, alphaDropShadow), fBarArray[1] = Fade(DARKGRAY, alphaDropShadow), fBarArray[2] = Fade(DARKGRAY, alphaDropShadow), fBarArray[3] = Fade(DARKGRAY, alphaDropShadow);
+                        instructfBarArray[0] = Fade(DARKGRAY, alphaDropShadow), instructfBarArray[1] = Fade(DARKGRAY, alphaDropShadow), instructfBarArray[2] = Fade(DARKGRAY, alphaDropShadow), instructfBarArray[3] = Fade(DARKGRAY, alphaDropShadow);
+                        instructguessArray[0] = Fade(DARKGRAY, alphaDropShadow), instructguessArray[1] = Fade(DARKGRAY, alphaDropShadow), instructguessArray[2] = Fade(DARKGRAY, alphaDropShadow), instructguessArray[3] = Fade(DARKGRAY, alphaDropShadow);
                         lightCounter = -1;   
                     }  
                     lightCounter++;
                     lightSpawnTime = realLightTime;
                 }
                 
-                DrawEllipse(CIRCLE1x-50, CIRCLE1y-650, 85, 85, fBarArray[0]);
+                DrawEllipse(CIRCLE1x-50, CIRCLE1y-650, 85, 85, instructfBarArray[0]);
                 DrawEllipseLines(CIRCLE1x-50, CIRCLE1y-650, 85, 85, BLACK);
                 DrawEllipseLines(CIRCLE1x-50, CIRCLE1y-650, 86, 86, BLACK);
                 DrawEllipseLines(CIRCLE1x-50, CIRCLE1y-650, 87, 87, BLACK);
                 
-                DrawEllipse(CIRCLE2x-50, CIRCLE2y-650, 85, 85, fBarArray[1]);
+                DrawEllipse(CIRCLE2x-50, CIRCLE2y-650, 85, 85, instructfBarArray[1]);
                 DrawEllipseLines(CIRCLE2x-50, CIRCLE2y-650, 85, 85, BLACK);
                 DrawEllipseLines(CIRCLE2x-50, CIRCLE2y-650, 86, 86, BLACK);
                 DrawEllipseLines(CIRCLE2x-50, CIRCLE2y-650, 87, 87, BLACK);
                 
-                DrawEllipse(CIRCLE3x-50, CIRCLE3y-650, 85, 85, fBarArray[2]);
+                DrawEllipse(CIRCLE3x-50, CIRCLE3y-650, 85, 85, instructfBarArray[2]);
                 DrawEllipseLines(CIRCLE3x-50, CIRCLE3y-650, 85, 85, BLACK);
                 DrawEllipseLines(CIRCLE3x-50, CIRCLE3y-650, 86, 86, BLACK);
                 DrawEllipseLines(CIRCLE3x-50, CIRCLE3y-650, 87, 87, BLACK);
                 
-                DrawEllipse(CIRCLE4x-50, CIRCLE4y-650, 85, 85, fBarArray[3]);
+                DrawEllipse(CIRCLE4x-50, CIRCLE4y-650, 85, 85, instructfBarArray[3]);
                 DrawEllipseLines(CIRCLE4x-50, CIRCLE4y-650, 85, 85, BLACK);
                 DrawEllipseLines(CIRCLE4x-50, CIRCLE4y-650, 86, 86, BLACK);
                 DrawEllipseLines(CIRCLE4x-50, CIRCLE4y-650, 87, 87, BLACK);
+                
+                DrawText("Fill in the right combination to win it all.", 960, 300, 40, Fade(WHITE, alphaInstruct));
+                DrawText("You have 8 attempts, choose wisely!", 985, 350, 40, Fade(WHITE, alphaInstruct));
+
+                DrawEllipse(guessCircleA1X-700, guessCircleA1Y-300, 10, 10, instructguessArray[0]), DrawEllipseLines(guessCircleA1X-700, guessCircleA1Y-300, 11, 11, BLACK), DrawEllipseLines(guessCircleA1X-700, guessCircleA1Y-300, 12, 12, BLACK), DrawEllipseLines(guessCircleA1X-700, guessCircleA1Y-300, 13, 13, BLACK);
+
+                DrawEllipse(guessCircleA1X-660, guessCircleA1Y-300, 10, 10, instructguessArray[1]), DrawEllipseLines(guessCircleA1X-660, guessCircleA1Y-300, 11, 11, BLACK), DrawEllipseLines(guessCircleA1X-660, guessCircleA1Y-300, 12, 12, BLACK), DrawEllipseLines(guessCircleA1X-660, guessCircleA1Y-300, 13, 13, BLACK);
+                
+                DrawEllipse(guessCircleA1X-700, guessCircleA1Y-260, 10, 10, instructguessArray[2]), DrawEllipseLines(guessCircleA1X-700, guessCircleA1Y-260, 11, 11, BLACK), DrawEllipseLines(guessCircleA1X-700, guessCircleA1Y-260, 12, 12, BLACK), DrawEllipseLines(guessCircleA1X-700, guessCircleA1Y-260, 13, 13, BLACK);
+                
+                DrawEllipse(guessCircleA1X-660, guessCircleA1Y-260, 10, 10, instructguessArray[3]), DrawEllipseLines(guessCircleA1X-660, guessCircleA1Y-260, 11, 11, BLACK), DrawEllipseLines(guessCircleA1X-660, guessCircleA1Y-260, 12, 12, BLACK), DrawEllipseLines(guessCircleA1X-660, guessCircleA1Y-260, 13, 13, BLACK);   
+                
+                DrawText("The dots beside the combinations provide information about their placement and color", 310, 480, 30, Fade(WHITE, alphaInstruct));
+                DrawText("White - Wrong Place, Right Color\nRed - Right Place, Right Color\nGray - NEITHER!", 310, 530, 30, Fade(WHITE, alphaInstruct));
+                
+                DrawText("Caveats:", 160, 690, 100, Fade(WHITE, alphaInstruct));
+                DrawText("Some combinations can have multiple of the same color!", 630, 715, 30, Fade(WHITE, alphaInstruct));
+                DrawText("You have 500 seconds to solve the mystery, use your time well!", 630, 745, 30, Fade(WHITE, alphaInstruct));
+                
+                DrawRectangleRec(invisIUnderstand, Fade(RED, alphaInvis));
+                DrawEllipse(900, 900, 250, 100, Fade(GOLD, alphaInstruct));
+                DrawTextEx(font, "I Understand", posIUnderstandBlack, 62, 9, Fade(BLACK, alphaInstruct));
+                DrawTextEx(font, "I Understand", posIUnderstand, 60, 10, Fade(WHITE, alphaInstruct));
             }
             
             
@@ -1000,8 +1048,7 @@ int main(void)
             if (normalScreen) { // Normal GAMEMODE code
             
                 lightCounter = 0; // Confirms reset from instruction screen, so as to not interfere
-                fBarArray[0] = Fade(DARKGRAY, alphaDropShadow), fBarArray[1] = Fade(DARKGRAY, alphaDropShadow), fBarArray[2] = Fade(DARKGRAY, alphaDropShadow), fBarArray[3] = Fade(DARKGRAY, alphaDropShadow); // Resets focus bar to gray colors
-        
+                
                 ballSpawning();
 
                 for (int i = 0; i < ballCount; i++) { // Background moving along the x-axis
@@ -1284,7 +1331,7 @@ int main(void)
                 DrawEllipseLines(SubmitBtnX, SubmitBtnY, 57, 57, DARKGRAY);
                 DrawTextEx(font, "Submit", (Vector2){SubmitBtnX-50, SubmitBtnY-10}, 30, 4, Fade(WHITE, alphaVis));
                 
-                if ((isHoveringSubmit && (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) || (IsKeyPressed(KEY_ENTER)) && gamemodeScreen == false && mainScreen == false && currentFCircle == 4)) { // IF-statement for submit button
+                if (((isHoveringSubmit && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) || IsKeyPressed(KEY_ENTER)) && !gamemodeScreen && !mainScreen && currentFCircle == 4) { // IF-statement for submit button
                     
                     if (strcmp(storedMemoryBarArray[memBarCount], RNGnums) == 0) { // strcmp compares strings from the string.h library, not the usual comparison operator
                         // GAME IS FINISHED IF THE STRINGS ARE IDENTICAL
@@ -1295,9 +1342,9 @@ int main(void)
                         hasSubmitted = true;
                      
                     } else { // If game is not finished
-                        if (tabAlphaArray[memBarCount] < 1) tabAlphaArray[memBarCount] += 0.02f; // change this line later
                         printf("User Input: %s\n", storedMemoryBarArray[memBarCount]);
                         currentFCircle = 0;
+                        lightCounter = 0;
                         fBarArray[0] = Fade(DARKGRAY, alphaDropShadow), fBarArray[1] = Fade(DARKGRAY, alphaDropShadow), fBarArray[2] = Fade(DARKGRAY, alphaDropShadow), fBarArray[3] = Fade(DARKGRAY, alphaDropShadow); // Resets the focus bar to be gray
                         
                         int tabCount = 0;
@@ -1440,9 +1487,10 @@ int main(void)
                     currentFCircle = 0;
                     gameOver = false;
                     RNG(1,8);
+                    instructionScreenNormal = false;
                     
                     // Resetting alphas
-                    tabAlphaArray[memBarCount] = 0.0f;
+                    tabAlphaArray[memBarCount] = 1.0f;
                     alphaBtnFadeIn = 0.0f;
                     alphaNUM3 = 0.0f; alphaNUM2 = 0.0f; alphaNUM1 = 0.0f; alphaGO = 0.0f;             
                     
@@ -1472,11 +1520,12 @@ int main(void)
                     RNGcount = 0;
                     currentFCircle = 0;
                     gameOver = false;
+                    instructionScreenNormal = false;
                     
                     // Resetting alphas
                     alphaMain = 0.0f;
                     alphaGamemode = 0.0f;
-                    tabAlphaArray[memBarCount] = 0.0f;
+                    tabAlphaArray[memBarCount] = 1.0f;
                     alphaBtnFadeIn = 0.0f;
                     alphaNUM3 = 0.0f; alphaNUM2 = 0.0f; alphaNUM1 = 0.0f; alphaGO = 0.0f;
                     RNG(1,8);
@@ -1530,9 +1579,10 @@ int main(void)
                     currentFCircle = 0;
                     gameOver = false;
                     RNG(1,8);
+                    instructionScreenNormal = false;
                     
                     // Resetting alphas
-                    tabAlphaArray[memBarCount] = 0.0f;
+                    tabAlphaArray[memBarCount] = 1.0f;
                     alphaBtnFadeIn = 0.0f;
                     alphaNUM3 = 0.0f; alphaNUM2 = 0.0f; alphaNUM1 = 0.0f; alphaGO = 0.0f;             
                     
@@ -1562,11 +1612,12 @@ int main(void)
                     RNGcount = 0;
                     currentFCircle = 0;
                     gameOver = false;
+                    instructionScreenNormal = false;
                     
                     // Resetting alphas
                     alphaMain = 0.0f;
                     alphaGamemode = 0.0f;
-                    tabAlphaArray[memBarCount] = 0.0f;
+                    tabAlphaArray[memBarCount] = 1.0f;
                     alphaBtnFadeIn = 0.0f;
                     alphaNUM3 = 0.0f; alphaNUM2 = 0.0f; alphaNUM1 = 0.0f; alphaGO = 0.0f;
                     RNG(1,8);
