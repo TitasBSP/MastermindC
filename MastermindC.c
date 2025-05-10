@@ -224,8 +224,8 @@ int main(void)
     
     // IMPORTANT TOGGLES FOR PLAYTESTING AND EFFICIENCY //
     
-    bool mainScreen = false;
-    bool gamemodeScreen = true;
+    bool mainScreen = true;
+    bool gamemodeScreen = false;
     
     bool startingScreen = false;
     
