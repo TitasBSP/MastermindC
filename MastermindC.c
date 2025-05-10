@@ -35,6 +35,12 @@ int timerLimit = 500;
 int realTimer;
 int secInterval = 1;
 
+// Instruct variables
+
+double lightSpawnTime = 0;
+double lightSpawnInterval = 1;
+int lightCounter = -1;
+
 // Global variables for background spawning, aka the balls...
 
 double recentSpawnTime = 0;
@@ -218,14 +224,20 @@ int main(void)
     // IMPORTANT TOGGLES FOR PLAYTESTING AND EFFICIENCY //
     
     bool mainScreen = false;
-    bool gamemodeScreen = false;
+    bool gamemodeScreen = true;
     
     bool startingScreen = false;
     
-    bool normalScreen = true;
+    bool normalScreen = false;
     bool advancedScreen = false;
     bool zenScreen = false;
     bool endlessScreen = false;
+    
+    bool instructionScreenNormal = false;
+    bool instructionScreenAdvanced = false;
+    bool instructionScreenZen = false;
+    bool instructionScreenEndless = false;
+    
     
     //-------------------------------------------------//
     
@@ -312,6 +324,26 @@ int main(void)
     
     float alphaGamemode = 0.0f;
     float alphaGamemodeBtns = 0.0f;
+    
+    // --------------------- INSTRUCTION SCREEN ------------------- //
+    
+    float alphaInstruct = 0.0f;
+    float alphaInstructLow = 0.0f;
+    
+    Vector2 posInstruct = {430, 80};
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     // ---------------------- STARTING SCREEN --------------------- //
     
@@ -624,6 +656,9 @@ int main(void)
         
         float moveTime = GetFrameTime();
         
+        double colorLightTime = GetTime();
+        int realLightTime = ceil(colorLightTime);
+        
         // BOOLEANS FOR GAME HITBOXES
     
         Vector2 MousePos = GetMousePosition();
@@ -670,8 +705,8 @@ int main(void)
         
         if (isHoveringNormalBtn && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == true) {
             gamemodeScreen = false;
-            startingScreen = true;
-            printf("endless.");
+            instructionScreenNormal = true;
+            printf("the usual.");
             fflush(stdout);
         } else if (isHoveringNormalBtn && mainScreen == true) {
             SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
@@ -681,7 +716,7 @@ int main(void)
         
         if (isHoveringAdvancedBtn && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == true) {
             gamemodeScreen = false;
-            startingScreen = true;
+            instructionScreenAdvanced = true;
             printf("advanced.");
             fflush(stdout);   
         } else if (isHoveringAdvancedBtn && mainScreen == true) {
@@ -692,7 +727,7 @@ int main(void)
         
         if (isHoveringZenBtn && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == true) {
             gamemodeScreen = false;
-            startingScreen = true;
+            instructionScreenZen = true;
             printf("zen.");
             fflush(stdout);   
         } else if (isHoveringZenBtn && mainScreen == true) {
@@ -703,7 +738,7 @@ int main(void)
         
         if (isHoveringEndlessBtn && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == true) {
             gamemodeScreen = false;
-            startingScreen = true;
+            instructionScreenEndless = true;
             printf("endless.");
             fflush(stdout);   
         } else if (isHoveringEndlessBtn && mainScreen == true) {
@@ -882,6 +917,64 @@ int main(void)
                 DrawRectangleRec(invisEndlessBtn, Fade(RED, alphaGamemodeBtns));
             }
             
+            if (instructionScreenNormal) {
+                if (alphaInstruct < 1) alphaInstruct += 0.05f;
+                if (alphaInstructLow < 0.4) alphaInstructLow += 0.05f;
+                
+                DrawRectangle(100, 50, 1680, 975, Fade(DARKGRAY, alphaInstructLow));
+                
+                DrawRectangleLines(100, 50, 1680, 975, Fade(GOLD, alphaInstruct));
+                DrawRectangleLines(101, 50, 1680, 975, Fade(GOLD, alphaInstruct));
+                DrawRectangleLines(100, 51, 1680, 975, Fade(GOLD, alphaInstruct)); 
+                DrawRectangleLines(101, 52, 1680, 975, Fade(GOLD, alphaInstruct));
+                DrawRectangleLines(102, 51, 1680, 975, Fade(GOLD, alphaInstruct));
+                
+                DrawTextEx(font, "INSTRUCTIONS", posInstruct, 150, 12, Fade(WHITE, alphaInstruct));
+                
+                if (realLightTime - lightSpawnTime >= lightSpawnInterval) {
+                    if (lightCounter >= 0) {
+                        fBarArray[0] = RED;
+                    }                    
+                    if (lightCounter >= 1) {
+                        fBarArray[1] = GREEN;
+                    }                   
+                    if (lightCounter >= 2) {
+                        fBarArray[2] = BLUE;
+                    }                    
+                    if (lightCounter >= 3) {
+                        fBarArray[3] = YELLOW;
+                    }
+
+                    if (lightCounter > 3) {
+                        fBarArray[0] = Fade(DARKGRAY, alphaDropShadow), fBarArray[1] = Fade(DARKGRAY, alphaDropShadow), fBarArray[2] = Fade(DARKGRAY, alphaDropShadow), fBarArray[3] = Fade(DARKGRAY, alphaDropShadow);
+                        lightCounter = -1;   
+                    }  
+                    lightCounter++;
+                    lightSpawnTime = realLightTime;
+                }
+                
+                DrawEllipse(CIRCLE1x-50, CIRCLE1y-650, 85, 85, fBarArray[0]);
+                DrawEllipseLines(CIRCLE1x-50, CIRCLE1y-650, 85, 85, BLACK);
+                DrawEllipseLines(CIRCLE1x-50, CIRCLE1y-650, 86, 86, BLACK);
+                DrawEllipseLines(CIRCLE1x-50, CIRCLE1y-650, 87, 87, BLACK);
+                
+                DrawEllipse(CIRCLE2x-50, CIRCLE2y-650, 85, 85, fBarArray[1]);
+                DrawEllipseLines(CIRCLE2x-50, CIRCLE2y-650, 85, 85, BLACK);
+                DrawEllipseLines(CIRCLE2x-50, CIRCLE2y-650, 86, 86, BLACK);
+                DrawEllipseLines(CIRCLE2x-50, CIRCLE2y-650, 87, 87, BLACK);
+                
+                DrawEllipse(CIRCLE3x-50, CIRCLE3y-650, 85, 85, fBarArray[2]);
+                DrawEllipseLines(CIRCLE3x-50, CIRCLE3y-650, 85, 85, BLACK);
+                DrawEllipseLines(CIRCLE3x-50, CIRCLE3y-650, 86, 86, BLACK);
+                DrawEllipseLines(CIRCLE3x-50, CIRCLE3y-650, 87, 87, BLACK);
+                
+                DrawEllipse(CIRCLE4x-50, CIRCLE4y-650, 85, 85, fBarArray[3]);
+                DrawEllipseLines(CIRCLE4x-50, CIRCLE4y-650, 85, 85, BLACK);
+                DrawEllipseLines(CIRCLE4x-50, CIRCLE4y-650, 86, 86, BLACK);
+                DrawEllipseLines(CIRCLE4x-50, CIRCLE4y-650, 87, 87, BLACK);
+            }
+            
+            
             if (startingScreen) { // 3-2-1-GO Screen
                 if (alphaNUM3 < 1) {
                     if (alphaNUM3 < 1) alphaNUM3 += 0.02f;
@@ -905,6 +998,9 @@ int main(void)
             }
             
             if (normalScreen) { // Normal GAMEMODE code
+            
+                lightCounter = 0; // Confirms reset from instruction screen, so as to not interfere
+                fBarArray[0] = Fade(DARKGRAY, alphaDropShadow), fBarArray[1] = Fade(DARKGRAY, alphaDropShadow), fBarArray[2] = Fade(DARKGRAY, alphaDropShadow), fBarArray[3] = Fade(DARKGRAY, alphaDropShadow); // Resets focus bar to gray colors
         
                 ballSpawning();
 
@@ -1285,6 +1381,7 @@ int main(void)
                                 gamemodeScreen = false;
                                 mainScreen = false;
                                 startingScreen = false;
+                                instructionScreenNormal = false;
                             }
                         }
                         
@@ -1304,6 +1401,7 @@ int main(void)
                     gamemodeScreen = false;
                     mainScreen = false;
                     startingScreen = false;
+                    instructionScreenNormal = false;
                     
                     hasSubmitted = false;
                     
@@ -1311,7 +1409,7 @@ int main(void)
                
             }
             
-            if (!normalScreen && !gamemodeScreen && !mainScreen && !startingScreen && !gameOver) { // LEVEL COMPLETE SCREEN, a lot of resetting...
+            if (!normalScreen && !gamemodeScreen && !mainScreen && !startingScreen && !instructionScreenNormal && !gameOver) { // LEVEL COMPLETE SCREEN, a lot of resetting...
                 if (alphaBtnFadeIn < 1) alphaBtnFadeIn += 0.02f;
                 fBarArray[0] = Fade(DARKGRAY, alphaDropShadow), fBarArray[1] = Fade(DARKGRAY, alphaDropShadow), fBarArray[2] = Fade(DARKGRAY, alphaDropShadow), fBarArray[3] = Fade(DARKGRAY, alphaDropShadow);
                 
@@ -1401,7 +1499,7 @@ int main(void)
                 } else {
                     SetMouseCursor(MOUSE_CURSOR_DEFAULT);
                 }  
-            } else if (!normalScreen && !gamemodeScreen && !mainScreen && !startingScreen && gameOver) { // GAME OVER screen, practically identical except for output
+            } else if (!normalScreen && !gamemodeScreen && !mainScreen && !startingScreen && !instructionScreenNormal && gameOver) { // GAME OVER screen, practically identical except for output
                 if (alphaBtnFadeIn < 1) alphaBtnFadeIn += 0.02f;
                 fBarArray[0] = Fade(DARKGRAY, alphaDropShadow), fBarArray[1] = Fade(DARKGRAY, alphaDropShadow), fBarArray[2] = Fade(DARKGRAY, alphaDropShadow), fBarArray[3] = Fade(DARKGRAY, alphaDropShadow);
                 
