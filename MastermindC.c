@@ -7,7 +7,6 @@
 
 #define max_balls 10000
 
-
 // ██████╗░██████╗░███████╗░░░░░░░██████╗░░█████╗░███╗░░░███╗███████╗ ██╗░░░██╗░█████╗░██████╗░░██████╗
 // ██╔══██╗██╔══██╗██╔════╝░░░░░░██╔════╝░██╔══██╗████╗░████║██╔════╝ ██║░░░██║██╔══██╗██╔══██╗██╔════╝
 // ██████╔╝██████╔╝█████╗░░█████╗██║░░██╗░███████║██╔████╔██║█████╗░░ ╚██╗░██╔╝███████║██████╔╝╚█████╗░
@@ -61,6 +60,7 @@ int screenHeight = 1080;
 char timerText[4];
 bool gameOver = false;
 
+int gamemodeDecider = 0;
 
 // ███████╗██╗░░░██╗███╗░░██╗░█████╗░████████╗██╗░█████╗░███╗░░██╗░██████╗
 // ██╔════╝██║░░░██║████╗░██║██╔══██╗╚══██╔══╝██║██╔══██╗████╗░██║██╔════╝
@@ -212,7 +212,7 @@ void stopSong() { // More readable function
 
 // ░██████╗░░█████╗░███╗░░░███╗███████╗ ░██████╗████████╗░█████╗░██████╗░████████╗░██████╗ ██╗░░██╗███████╗██████╗░███████╗
 // ██╔════╝░██╔══██╗████╗░████║██╔════╝ ██╔════╝╚══██╔══╝██╔══██╗██╔══██╗╚══██╔══╝██╔════╝ ██║░░██║██╔════╝██╔══██╗██╔════╝
-//  █║░░██╗░███████║██╔████╔██║█████╗░░ ╚█████╗░░░░██║░░░███████║██████╔╝░░░██║░░░╚█████╗░ ███████║█████╗░░██████╔╝█████╗░░
+// ██║░░██╗░███████║██╔████╔██║█████╗░░ ╚█████╗░░░░██║░░░███████║██████╔╝░░░██║░░░╚█████╗░ ███████║█████╗░░██████╔╝█████╗░░
 // ██║░░╚██╗██╔══██║██║╚██╔╝██║██╔══╝░░ ░╚═══██╗░░░██║░░░██╔══██║██╔══██╗░░░██║░░░░╚═══██╗ ██╔══██║██╔══╝░░██╔══██╗██╔══╝░░
 // ╚██████╔╝██║░░██║██║░╚═╝░██║███████╗ ██████╔╝░░░██║░░░██║░░██║██║░░██║░░░██║░░░██████╔╝ ██║░░██║███████╗██║░░██║███████╗
 // ░╚═════╝░╚═╝░░╚═╝╚═╝░░░░░╚═╝╚══════╝ ╚═════╝░░░░╚═╝░░░╚═╝░░╚═╝╚═╝░░╚═╝░░░╚═╝░░░╚═════╝░ ╚═╝░░╚═╝╚══════╝╚═╝░░╚═╝╚══════╝
@@ -220,7 +220,7 @@ void stopSong() { // More readable function
 int main(void)
 {
     initMusic(); // Music starts here
-    RNGnums[0] = '\0'; // RNG number array is reset
+    RNGnums[0] = '\0'; // RNG number array is resetl
     
     // IMPORTANT TOGGLES FOR PLAYTESTING AND EFFICIENCY //
     
@@ -714,6 +714,7 @@ int main(void)
             instructionScreenNormal = true;
             printf("the usual.");
             fflush(stdout);
+            gamemodeDecider = 0;
         } else if (isHoveringNormalBtn && mainScreen == true) {
             SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
         } else {
@@ -724,7 +725,8 @@ int main(void)
             gamemodeScreen = false;
             instructionScreenAdvanced = true;
             printf("advanced.");
-            fflush(stdout);   
+            fflush(stdout);
+            gamemodeDecider = 1;            
         } else if (isHoveringAdvancedBtn && mainScreen == true) {
             SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
         } else {
@@ -755,6 +757,7 @@ int main(void)
         
         if (isHoveringIUnderstand && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false) {
             instructionScreenNormal = false;
+            instructionScreenAdvanced = false;
             startingScreen = true;
             printf("ready.");
             fflush(stdout);    
@@ -1040,7 +1043,20 @@ int main(void)
                     if (alphaGO < 1) alphaGO += 0.01f;
                     DrawText(StartingGO, 300, 100, 1000, Fade(GOLD, alphaGO));
                 } else {
-                    normalScreen = true;
+                    switch (gamemodeDecider) {
+                        case 0:
+                            normalScreen = true;
+                            break;
+                        case 1:
+                            advancedScreen = true;
+                            break;
+                        case 2:
+                            zenScreen = true;
+                            break;
+                        case 3:
+                            endlessScreen = true;
+                            break;
+                    }
                 }
                 
             }
@@ -1456,7 +1472,7 @@ int main(void)
                
             }
             
-            if (!normalScreen && !gamemodeScreen && !mainScreen && !startingScreen && !instructionScreenNormal && !gameOver) { // LEVEL COMPLETE SCREEN, a lot of resetting...
+            if (!normalScreen && !gamemodeScreen && !mainScreen && !startingScreen && !instructionScreenNormal && !instructionScreenAdvanced && !gameOver) { // LEVEL COMPLETE SCREEN, a lot of resetting...
                 if (alphaBtnFadeIn < 1) alphaBtnFadeIn += 0.02f;
                 fBarArray[0] = Fade(DARKGRAY, alphaDropShadow), fBarArray[1] = Fade(DARKGRAY, alphaDropShadow), fBarArray[2] = Fade(DARKGRAY, alphaDropShadow), fBarArray[3] = Fade(DARKGRAY, alphaDropShadow);
                 
@@ -1548,7 +1564,7 @@ int main(void)
                 } else {
                     SetMouseCursor(MOUSE_CURSOR_DEFAULT);
                 }  
-            } else if (!normalScreen && !gamemodeScreen && !mainScreen && !startingScreen && !instructionScreenNormal && gameOver) { // GAME OVER screen, practically identical except for output
+            } else if (!normalScreen && !gamemodeScreen && !mainScreen && !startingScreen && !instructionScreenNormal && !instructionScreenAdvanced && gameOver) { // GAME OVER screen, practically identical except for output
                 if (alphaBtnFadeIn < 1) alphaBtnFadeIn += 0.02f;
                 fBarArray[0] = Fade(DARKGRAY, alphaDropShadow), fBarArray[1] = Fade(DARKGRAY, alphaDropShadow), fBarArray[2] = Fade(DARKGRAY, alphaDropShadow), fBarArray[3] = Fade(DARKGRAY, alphaDropShadow);
                 
@@ -1641,10 +1657,696 @@ int main(void)
                     SetMouseCursor(MOUSE_CURSOR_DEFAULT);
                 }  
             }
+            
+            
+            
+            
+            if (instructionScreenAdvanced) {
+                if (alphaInstruct < 1) alphaInstruct += 0.05f;
+                if (alphaInstructLow < 0.4) alphaInstructLow += 0.05f;
+                
+                DrawRectangle(100, 50, 1680, 975, Fade(DARKGRAY, alphaInstructLow));
+                
+                DrawRectangleLines(100, 50, 1680, 975, Fade(GOLD, alphaInstruct));
+                DrawRectangleLines(101, 50, 1680, 975, Fade(GOLD, alphaInstruct));
+                DrawRectangleLines(100, 51, 1680, 975, Fade(GOLD, alphaInstruct)); 
+                DrawRectangleLines(101, 52, 1680, 975, Fade(GOLD, alphaInstruct));
+                DrawRectangleLines(102, 51, 1680, 975, Fade(GOLD, alphaInstruct));
+                
+                DrawTextEx(font, "INSTRUCTIONS", posInstruct, 150, 12, Fade(WHITE, alphaInstruct));
+                
+                if (realLightTime - lightSpawnTime >= lightSpawnInterval) {
+                    if (lightCounter >= 0) {
+                        instructfBarArray[0] = RED;
+                        instructguessArray[0] = RED;
+                    }                    
+                    if (lightCounter >= 1) {
+                        instructfBarArray[1] = GREEN;
+                        instructguessArray[1] = WHITE;
+                    }                   
+                    if (lightCounter >= 2) {
+                        instructfBarArray[2] = BLUE;
+                        instructguessArray[2] = WHITE;
+                    }                    
+                    if (lightCounter >= 3) {
+                        instructfBarArray[3] = YELLOW;
+                        instructguessArray[3] = RED;
+                    }
 
+                    if (lightCounter > 3) {
+                        instructfBarArray[0] = Fade(DARKGRAY, alphaDropShadow), instructfBarArray[1] = Fade(DARKGRAY, alphaDropShadow), instructfBarArray[2] = Fade(DARKGRAY, alphaDropShadow), instructfBarArray[3] = Fade(DARKGRAY, alphaDropShadow);
+                        instructguessArray[0] = Fade(DARKGRAY, alphaDropShadow), instructguessArray[1] = Fade(DARKGRAY, alphaDropShadow), instructguessArray[2] = Fade(DARKGRAY, alphaDropShadow), instructguessArray[3] = Fade(DARKGRAY, alphaDropShadow);
+                        lightCounter = -1;   
+                    }  
+                    lightCounter++;
+                    lightSpawnTime = realLightTime;
+                }
+                
+                DrawEllipse(CIRCLE1x-50, CIRCLE1y-650, 85, 85, instructfBarArray[0]);
+                DrawEllipseLines(CIRCLE1x-50, CIRCLE1y-650, 85, 85, BLACK);
+                DrawEllipseLines(CIRCLE1x-50, CIRCLE1y-650, 86, 86, BLACK);
+                DrawEllipseLines(CIRCLE1x-50, CIRCLE1y-650, 87, 87, BLACK);
+                
+                DrawEllipse(CIRCLE2x-50, CIRCLE2y-650, 85, 85, instructfBarArray[1]);
+                DrawEllipseLines(CIRCLE2x-50, CIRCLE2y-650, 85, 85, BLACK);
+                DrawEllipseLines(CIRCLE2x-50, CIRCLE2y-650, 86, 86, BLACK);
+                DrawEllipseLines(CIRCLE2x-50, CIRCLE2y-650, 87, 87, BLACK);
+                
+                DrawEllipse(CIRCLE3x-50, CIRCLE3y-650, 85, 85, instructfBarArray[2]);
+                DrawEllipseLines(CIRCLE3x-50, CIRCLE3y-650, 85, 85, BLACK);
+                DrawEllipseLines(CIRCLE3x-50, CIRCLE3y-650, 86, 86, BLACK);
+                DrawEllipseLines(CIRCLE3x-50, CIRCLE3y-650, 87, 87, BLACK);
+                
+                DrawEllipse(CIRCLE4x-50, CIRCLE4y-650, 85, 85, instructfBarArray[3]);
+                DrawEllipseLines(CIRCLE4x-50, CIRCLE4y-650, 85, 85, BLACK);
+                DrawEllipseLines(CIRCLE4x-50, CIRCLE4y-650, 86, 86, BLACK);
+                DrawEllipseLines(CIRCLE4x-50, CIRCLE4y-650, 87, 87, BLACK);
+                
+                DrawText("Fill in the right combination to win it all.", 960, 300, 40, Fade(WHITE, alphaInstruct));
+                DrawText("You have 8 attempts, choose wisely!", 985, 350, 40, Fade(WHITE, alphaInstruct));
+
+                DrawEllipse(guessCircleA1X-700, guessCircleA1Y-300, 10, 10, instructguessArray[0]), DrawEllipseLines(guessCircleA1X-700, guessCircleA1Y-300, 11, 11, BLACK), DrawEllipseLines(guessCircleA1X-700, guessCircleA1Y-300, 12, 12, BLACK), DrawEllipseLines(guessCircleA1X-700, guessCircleA1Y-300, 13, 13, BLACK);
+
+                DrawEllipse(guessCircleA1X-660, guessCircleA1Y-300, 10, 10, instructguessArray[1]), DrawEllipseLines(guessCircleA1X-660, guessCircleA1Y-300, 11, 11, BLACK), DrawEllipseLines(guessCircleA1X-660, guessCircleA1Y-300, 12, 12, BLACK), DrawEllipseLines(guessCircleA1X-660, guessCircleA1Y-300, 13, 13, BLACK);
+                
+                DrawEllipse(guessCircleA1X-700, guessCircleA1Y-260, 10, 10, instructguessArray[2]), DrawEllipseLines(guessCircleA1X-700, guessCircleA1Y-260, 11, 11, BLACK), DrawEllipseLines(guessCircleA1X-700, guessCircleA1Y-260, 12, 12, BLACK), DrawEllipseLines(guessCircleA1X-700, guessCircleA1Y-260, 13, 13, BLACK);
+                
+                DrawEllipse(guessCircleA1X-660, guessCircleA1Y-260, 10, 10, instructguessArray[3]), DrawEllipseLines(guessCircleA1X-660, guessCircleA1Y-260, 11, 11, BLACK), DrawEllipseLines(guessCircleA1X-660, guessCircleA1Y-260, 12, 12, BLACK), DrawEllipseLines(guessCircleA1X-660, guessCircleA1Y-260, 13, 13, BLACK);   
+                
+                DrawText("The dots beside the combinations provide information about their placement and color", 310, 480, 30, Fade(WHITE, alphaInstruct));
+                DrawText("White - Wrong Place, Right Color\nRed - Right Place, Right Color\nGray - NEITHER!", 310, 530, 30, Fade(WHITE, alphaInstruct));
+                
+                DrawText("Caveats:", 160, 690, 100, Fade(WHITE, alphaInstruct));
+                DrawText("Some combinations can have multiple of the same color!", 630, 715, 30, Fade(WHITE, alphaInstruct));
+                DrawText("You have 500 seconds to solve the mystery, use your time well!", 630, 745, 30, Fade(WHITE, alphaInstruct));
+                
+                DrawRectangleRec(invisIUnderstand, Fade(RED, alphaInvis));
+                DrawEllipse(900, 900, 250, 100, Fade(GOLD, alphaInstruct));
+                DrawTextEx(font, "I Understand", posIUnderstandBlack, 62, 9, Fade(BLACK, alphaInstruct));
+                DrawTextEx(font, "I Understand", posIUnderstand, 60, 10, Fade(WHITE, alphaInstruct));
+            }     
+            
+            
+            
+            
+            if (advancedScreen) {
+                lightCounter = 0; // Confirms reset from instruction screen, so as to not interfere
+                
+                ballSpawning();
+
+                for (int i = 0; i < ballCount; i++) { // Background moving along the x-axis
+                    spawnBalls[i].x += ballSpeed[i] * moveTime;
+                }
+                
+                for (int i = 0; i < ballCount; i++) { // Drawing the balls
+                    DrawCircleV(spawnBalls[i], ballRadius[i], ballColor[i]);
+                }
+                
+                Timer();
+     
+                if (timerLimit <= 0) { // Game over when timer is 0 or less
+                    gameOver = true;
+                    advancedScreen = false;
+                }
+                
+                DrawRectangleRec(DropShadow, Fade(DARKGRAY, alphaDropShadow));
+                
+                DrawRectangle(1060, 30, 175, 120, Fade(GRAY, alphaDropShadow));
+                DrawTextEx(font, "Time Remaining", posTimeRemain, 20, 3, WHITE);
+                DrawText(timerText, 1105, 90, 50, WHITE);
+                
+                
+                // FOCUS BAR
+                DrawRectangleRec(FocusBar, GRAY);        
+                DrawEllipse(CIRCLE1x, CIRCLE1y, 85, 85, fBarArray[0]);
+                DrawEllipseLines(CIRCLE1x, CIRCLE1y, 85, 85, BLACK);
+                DrawEllipseLines(CIRCLE1x, CIRCLE1y, 86, 86, BLACK);
+                DrawEllipseLines(CIRCLE1x, CIRCLE1y, 87, 87, BLACK);
+                
+                DrawEllipse(CIRCLE2x, CIRCLE2y, 85, 85, fBarArray[1]);
+                DrawEllipseLines(CIRCLE2x, CIRCLE2y, 85, 85, BLACK);
+                DrawEllipseLines(CIRCLE2x, CIRCLE2y, 86, 86, BLACK);
+                DrawEllipseLines(CIRCLE2x, CIRCLE2y, 87, 87, BLACK);
+                
+                DrawEllipse(CIRCLE3x, CIRCLE3y, 85, 85, fBarArray[2]);
+                DrawEllipseLines(CIRCLE3x, CIRCLE3y, 85, 85, BLACK);
+                DrawEllipseLines(CIRCLE3x, CIRCLE3y, 86, 86, BLACK);
+                DrawEllipseLines(CIRCLE3x, CIRCLE3y, 87, 87, BLACK);
+                
+                DrawEllipse(CIRCLE4x, CIRCLE4y, 85, 85, fBarArray[3]);
+                DrawEllipseLines(CIRCLE4x, CIRCLE4y, 85, 85, BLACK);
+                DrawEllipseLines(CIRCLE4x, CIRCLE4y, 86, 86, BLACK);
+                DrawEllipseLines(CIRCLE4x, CIRCLE4y, 87, 87, BLACK);
+                
+                /////////////
+                //  ABOVE  //
+                //  FOCUS  //
+                // CIRCLES //
+                /////////////
+                
+                // A - H (1)
+                DrawEllipse(tabCircleA1X, tabCircleA1Y, 50, 50, tabArray[0][0]), DrawEllipseLines(tabCircleA1X, tabCircleA1Y, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X, tabCircleA1Y, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X, tabCircleA1Y, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X, tabCircleA1Y-110, 50, 50, tabArray[1][0]), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-110, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-110, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-110, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X, tabCircleA1Y-220, 50, 50, tabArray[2][0]), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-220, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-220, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-220, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X, tabCircleA1Y-330, 50, 50, tabArray[3][0]), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-330, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-330, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-330, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X, tabCircleA1Y-440, 50, 50, tabArray[4][0]), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-440, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-440, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-440, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X, tabCircleA1Y-550, 50, 50, tabArray[5][0]), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-550, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-550, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-550, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X, tabCircleA1Y-660, 50, 50, tabArray[6][0]), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-660, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-660, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-660, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X, tabCircleA1Y-770, 50, 50, tabArray[7][0]), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-770, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-770, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X, tabCircleA1Y-770, 53, 53, BLACK);                
+                
+                // A - H (2)
+                DrawEllipse(tabCircleA1X+120, tabCircleA1Y, 50, 50, tabArray[0][1]), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+120, tabCircleA1Y-110, 50, 50, tabArray[1][1]), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-110, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-110, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-110, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+120, tabCircleA1Y-220, 50, 50, tabArray[2][1]), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-220, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-220, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-220, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+120, tabCircleA1Y-330, 50, 50, tabArray[3][1]), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-330, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-330, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-330, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+120, tabCircleA1Y-440, 50, 50, tabArray[4][1]), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-440, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-440, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-440, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+120, tabCircleA1Y-550, 50, 50, tabArray[5][1]), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-550, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-550, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-550, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+120, tabCircleA1Y-660, 50, 50, tabArray[6][1]), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-660, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-660, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-660, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+120, tabCircleA1Y-770, 50, 50, tabArray[7][1]), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-770, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-770, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+120, tabCircleA1Y-770, 53, 53, BLACK);                
+                
+                // A - H (3)
+                DrawEllipse(tabCircleA1X+240, tabCircleA1Y, 50, 50, tabArray[0][2]), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+240, tabCircleA1Y-110, 50, 50, tabArray[1][2]), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-110, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-110, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-110, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+240, tabCircleA1Y-220, 50, 50, tabArray[2][2]), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-220, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-220, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-220, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+240, tabCircleA1Y-330, 50, 50, tabArray[3][2]), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-330, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-330, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-330, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+240, tabCircleA1Y-440, 50, 50, tabArray[4][2]), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-440, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-440, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-440, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+240, tabCircleA1Y-550, 50, 50, tabArray[5][2]), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-550, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-550, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-550, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+240, tabCircleA1Y-660, 50, 50, tabArray[6][2]), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-660, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-660, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-660, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+240, tabCircleA1Y-770, 50, 50, tabArray[7][2]), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-770, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-770, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+240, tabCircleA1Y-770, 53, 53, BLACK);               
+
+                // A - H (4)
+                DrawEllipse(tabCircleA1X+360, tabCircleA1Y, 50, 50, tabArray[0][3]), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+360, tabCircleA1Y-110, 50, 50, tabArray[1][3]), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-110, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-110, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-110, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+360, tabCircleA1Y-220, 50, 50, tabArray[2][3]), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-220, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-220, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-220, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+360, tabCircleA1Y-330, 50, 50, tabArray[3][3]), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-330, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-330, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-330, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+360, tabCircleA1Y-440, 50, 50, tabArray[4][3]), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-440, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-440, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-440, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+360, tabCircleA1Y-550, 50, 50, tabArray[5][3]), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-550, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-550, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-550, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+360, tabCircleA1Y-660, 50, 50, tabArray[6][3]), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-660, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-660, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-660, 53, 53, BLACK);
+                
+                DrawEllipse(tabCircleA1X+360, tabCircleA1Y-770, 50, 50, tabArray[7][3]), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-770, 51, 51, BLACK), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-770, 52, 52, BLACK), DrawEllipseLines(tabCircleA1X+360, tabCircleA1Y-770, 53, 53, BLACK);                
+                
+                /////////////
+                //  GUESS  //
+                // CIRCLES //
+                /////////////
+                
+                // 1 - 4 (A)
+                DrawEllipse(guessCircleA1X, guessCircleA1Y, 10, 10, guessArray[0][0]), DrawEllipseLines(guessCircleA1X, guessCircleA1Y, 11, 11, BLACK), DrawEllipseLines(guessCircleA1X, guessCircleA1Y, 12, 12, BLACK), DrawEllipseLines(guessCircleA1X, guessCircleA1Y, 13, 13, BLACK);
+                
+                DrawEllipse(guessCircleA1X+40, guessCircleA1Y, 10, 10, guessArray[0][1]), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y, 11, 11, BLACK), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y, 12, 12, BLACK), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y, 13, 13, BLACK);
+                
+                DrawEllipse(guessCircleA1X, guessCircleA1Y+40, 10, 10, guessArray[0][2]), DrawEllipseLines(guessCircleA1X, guessCircleA1Y+40, 11, 11, BLACK), DrawEllipseLines(guessCircleA1X, guessCircleA1Y+40, 12, 12, BLACK), DrawEllipseLines(guessCircleA1X, guessCircleA1Y+40, 13, 13, BLACK);
+                
+                DrawEllipse(guessCircleA1X+40, guessCircleA1Y+40, 10, 10, guessArray[0][3]), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y+40, 11, 11, BLACK), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y+40, 12, 12, BLACK), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y+40, 13, 13, BLACK);                
+                
+                
+                // 1 - 4 (B)
+                DrawEllipse(guessCircleA1X, guessCircleA1Y-110, 10, 10, guessArray[1][0]), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-110, 11, 11, BLACK), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-110, 12, 12, BLACK), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-110, 13, 13, BLACK);
+                
+                DrawEllipse(guessCircleA1X+40, guessCircleA1Y-110, 10, 10, guessArray[1][1]), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-110, 11, 11, BLACK), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-110, 12, 12, BLACK), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-110, 13, 13, BLACK);
+                
+                DrawEllipse(guessCircleA1X, guessCircleA1Y-70, 10, 10, guessArray[1][2]), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-70, 11, 11, BLACK), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-70, 12, 12, BLACK), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-70, 13, 13, BLACK);
+                
+                DrawEllipse(guessCircleA1X+40, guessCircleA1Y-70, 10, 10, guessArray[1][3]), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-70, 11, 11, BLACK), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-70, 12, 12, BLACK), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-70, 13, 13, BLACK);                
+                
+                
+                // 1 - 4 (C)
+                DrawEllipse(guessCircleA1X, guessCircleA1Y-220, 10, 10, guessArray[2][0]), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-220, 11, 11, BLACK), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-220, 12, 12, BLACK), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-220, 13, 13, BLACK);
+                
+                DrawEllipse(guessCircleA1X+40, guessCircleA1Y-220, 10, 10, guessArray[2][1]), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-220, 11, 11, BLACK), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-220, 12, 12, BLACK), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-220, 13, 13, BLACK);
+                
+                DrawEllipse(guessCircleA1X, guessCircleA1Y-180, 10, 10, guessArray[2][2]), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-180, 11, 11, BLACK), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-180, 12, 12, BLACK), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-180, 13, 13, BLACK);
+                
+                DrawEllipse(guessCircleA1X+40, guessCircleA1Y-180, 10, 10, guessArray[2][3]), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-180, 11, 11, BLACK), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-180, 12, 12, BLACK), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-180, 13, 13, BLACK);                
+                
+                
+                // 1 - 4 (D)
+                DrawEllipse(guessCircleA1X, guessCircleA1Y-330, 10, 10, guessArray[3][0]), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-330, 11, 11, BLACK), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-330, 12, 12, BLACK), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-330, 13, 13, BLACK);
+                
+                DrawEllipse(guessCircleA1X+40, guessCircleA1Y-330, 10, 10, guessArray[3][1]), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-330, 11, 11, BLACK), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-330, 12, 12, BLACK), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-330, 13, 13, BLACK);
+                
+                DrawEllipse(guessCircleA1X, guessCircleA1Y-290, 10, 10, guessArray[3][2]), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-290, 11, 11, BLACK), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-290, 12, 12, BLACK), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-290, 13, 13, BLACK);
+                
+                DrawEllipse(guessCircleA1X+40, guessCircleA1Y-290, 10, 10, guessArray[3][3]), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-290, 11, 11, BLACK), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-290, 12, 12, BLACK), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-290, 13, 13, BLACK);                
+                
+                
+                // 1 - 4 (E)
+                DrawEllipse(guessCircleA1X, guessCircleA1Y-440, 10, 10, guessArray[4][0]), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-440, 11, 11, BLACK), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-440, 12, 12, BLACK), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-440, 13, 13, BLACK);
+                
+                DrawEllipse(guessCircleA1X+40, guessCircleA1Y-440, 10, 10, guessArray[4][1]), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-440, 11, 11, BLACK), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-440, 12, 12, BLACK), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-440, 13, 13, BLACK);
+                
+                DrawEllipse(guessCircleA1X, guessCircleA1Y-400, 10, 10, guessArray[4][2]), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-400, 11, 11, BLACK), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-400, 12, 12, BLACK), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-400, 13, 13, BLACK);
+                
+                DrawEllipse(guessCircleA1X+40, guessCircleA1Y-400, 10, 10, guessArray[4][3]), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-400, 11, 11, BLACK), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-400, 12, 12, BLACK), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-400, 13, 13, BLACK);               
+
+
+                // 1 - 4 (F)
+                DrawEllipse(guessCircleA1X, guessCircleA1Y-550, 10, 10, guessArray[5][0]), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-550, 11, 11, BLACK), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-550, 12, 12, BLACK), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-550, 13, 13, BLACK);
+                
+                DrawEllipse(guessCircleA1X+40, guessCircleA1Y-550, 10, 10, guessArray[5][1]), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-550, 11, 11, BLACK), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-550, 12, 12, BLACK), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-550, 13, 13, BLACK);
+                
+                DrawEllipse(guessCircleA1X, guessCircleA1Y-510, 10, 10, guessArray[5][2]), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-510, 11, 11, BLACK), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-510, 12, 12, BLACK), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-510, 13, 13, BLACK);
+                
+                DrawEllipse(guessCircleA1X+40, guessCircleA1Y-510, 10, 10, guessArray[5][3]), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-510, 11, 11, BLACK), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-510, 12, 12, BLACK), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-510, 13, 13, BLACK);                
+                
+                
+                // 1 - 4 (G)
+                DrawEllipse(guessCircleA1X, guessCircleA1Y-660, 10, 10, guessArray[6][0]), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-660, 11, 11, BLACK), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-660, 12, 12, BLACK), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-660, 13, 13, BLACK);
+                
+                DrawEllipse(guessCircleA1X+40, guessCircleA1Y-660, 10, 10, guessArray[6][1]), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-660, 11, 11, BLACK), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-660, 12, 12, BLACK), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-660, 13, 13, BLACK);
+                
+                DrawEllipse(guessCircleA1X, guessCircleA1Y-620, 10, 10, guessArray[6][2]), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-620, 11, 11, BLACK), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-620, 12, 12, BLACK), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-620, 13, 13, BLACK);
+                
+                DrawEllipse(guessCircleA1X+40, guessCircleA1Y-620, 10, 10, guessArray[6][3]), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-620, 11, 11, BLACK), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-620, 12, 12, BLACK), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-620, 13, 13, BLACK);               
+
+
+                // 1 - 4 (H)
+                DrawEllipse(guessCircleA1X, guessCircleA1Y-770, 10, 10, guessArray[7][0]), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-770, 11, 11, BLACK), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-770, 12, 12, BLACK), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-770, 13, 13, BLACK);
+                
+                DrawEllipse(guessCircleA1X+40, guessCircleA1Y-770, 10, 10, guessArray[7][1]), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-770, 11, 11, BLACK), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-770, 12, 12, BLACK), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-770, 13, 13, BLACK);
+                
+                DrawEllipse(guessCircleA1X, guessCircleA1Y-730, 10, 10, guessArray[7][2]), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-730, 11, 11, BLACK), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-730, 12, 12, BLACK), DrawEllipseLines(guessCircleA1X, guessCircleA1Y-730, 13, 13, BLACK);
+                
+                DrawEllipse(guessCircleA1X+40, guessCircleA1Y-730, 10, 10, guessArray[7][3]), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-730, 11, 11, BLACK), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-730, 12, 12, BLACK), DrawEllipseLines(guessCircleA1X+40, guessCircleA1Y-730, 13, 13, BLACK);
+                
+                // SELECT BAR
+                DrawRectangleRec(SelectBar, DARKGRAY);
+                DrawTextEx(font, Title, posSelectBarText, SelectBarTextSize, 8, WHITE);
+                
+                DrawEllipse(CIRCLEredX, CIRCLEredY, 85, 85, Fade(RED, alphaRED));
+                DrawEllipseLines(CIRCLEredX, CIRCLEredY, 85, 85, BLACK);
+                DrawEllipseLines(CIRCLEredX, CIRCLEredY, 86, 86, BLACK);
+                DrawEllipseLines(CIRCLEredX, CIRCLEredY, 87, 87, BLACK);
+                DrawText("1", CIRCLEredX-15, CIRCLEredY-45, 100, Fade(BLACK, alphaQuarterVis));
+                DrawRectangleRec(invisCIRCLEred, Fade(BLACK, alphaInvis));
+
+                DrawEllipse(CIRCLEgreenX, CIRCLEgreenY, 85, 85, Fade(GREEN, alphaGREEN));
+                DrawEllipseLines(CIRCLEgreenX, CIRCLEgreenY, 85, 85, BLACK);
+                DrawEllipseLines(CIRCLEgreenX, CIRCLEgreenY, 86, 86, BLACK);
+                DrawEllipseLines(CIRCLEgreenX, CIRCLEgreenY, 87, 87, BLACK);
+                DrawText("2", CIRCLEgreenX-25, CIRCLEgreenY-45, 100, Fade(BLACK, alphaQuarterVis));
+                DrawRectangleRec(invisCIRCLEgreen, Fade(BLACK, alphaInvis));
+                
+                DrawEllipse(CIRCLEblueX, CIRCLEblueY, 85, 85, Fade(BLUE, alphaBLUE));
+                DrawEllipseLines(CIRCLEblueX, CIRCLEblueY, 85, 85, BLACK);
+                DrawEllipseLines(CIRCLEblueX, CIRCLEblueY, 86, 86, BLACK);
+                DrawEllipseLines(CIRCLEblueX, CIRCLEblueY, 87, 87, BLACK);
+                DrawText("3", CIRCLEblueX-25, CIRCLEblueY-45, 100, Fade(BLACK, alphaQuarterVis));                
+                DrawRectangleRec(invisCIRCLEblue, Fade(BLACK, alphaInvis));                
+                
+                DrawEllipse(CIRCLEyellowX, CIRCLEyellowY, 85, 85, Fade(YELLOW, alphaYELLOW));
+                DrawEllipseLines(CIRCLEyellowX, CIRCLEyellowY, 85, 85, BLACK);
+                DrawEllipseLines(CIRCLEyellowX, CIRCLEyellowY, 86, 86, BLACK);
+                DrawEllipseLines(CIRCLEyellowX, CIRCLEyellowY, 87, 87, BLACK);  
+                DrawText("4", CIRCLEyellowX-25, CIRCLEyellowY-45, 100, Fade(BLACK, alphaQuarterVis));
+                DrawRectangleRec(invisCIRCLEyellow, Fade(BLACK, alphaInvis));
+                
+                DrawEllipse(CIRCLEorangeX, CIRCLEorangeY, 85, 85, Fade(ORANGE, alphaORANGE));
+                DrawEllipseLines(CIRCLEorangeX, CIRCLEorangeY, 85, 85, BLACK);
+                DrawEllipseLines(CIRCLEorangeX, CIRCLEorangeY, 86, 86, BLACK);
+                DrawEllipseLines(CIRCLEorangeX, CIRCLEorangeY, 87, 87, BLACK);
+                DrawText("5", CIRCLEorangeX-25, CIRCLEorangeY-45, 100, Fade(BLACK, alphaQuarterVis));
+                DrawRectangleRec(invisCIRCLEorange, Fade(BLACK, alphaInvis));
+                
+                DrawEllipse(CIRCLEpinkX, CIRCLEpinkY, 85, 85, Fade(PINK, alphaPINK));
+                DrawEllipseLines(CIRCLEpinkX, CIRCLEpinkY, 85, 85, BLACK);
+                DrawEllipseLines(CIRCLEpinkX, CIRCLEpinkY, 86, 86, BLACK);
+                DrawEllipseLines(CIRCLEpinkX, CIRCLEpinkY, 87, 87, BLACK);
+                DrawText("6", CIRCLEpinkX-25, CIRCLEpinkY-45, 100, Fade(BLACK, alphaQuarterVis));
+                DrawRectangleRec(invisCIRCLEpink, Fade(BLACK, alphaInvis));                
+                
+                DrawEllipse(CIRCLEgrayX, CIRCLEgrayY, 85, 85, Fade(GRAY, alphaGRAY));
+                DrawEllipseLines(CIRCLEgrayX, CIRCLEgrayY, 85, 85, BLACK);
+                DrawEllipseLines(CIRCLEgrayX, CIRCLEgrayY, 86, 86, BLACK);
+                DrawEllipseLines(CIRCLEgrayX, CIRCLEgrayY, 87, 87, BLACK);
+                DrawText("7", CIRCLEgrayX-25, CIRCLEgrayY-45, 100, Fade(BLACK, alphaQuarterVis));
+                DrawRectangleRec(invisCIRCLEgray, Fade(BLACK, alphaInvis));                
+                
+                DrawEllipse(CIRCLEwhiteX, CIRCLEwhiteY, 85, 85, Fade(WHITE, alphaWHITE));
+                DrawEllipseLines(CIRCLEwhiteX, CIRCLEwhiteY, 85, 85, BLACK);
+                DrawEllipseLines(CIRCLEwhiteX, CIRCLEwhiteY, 86, 86, BLACK);
+                DrawEllipseLines(CIRCLEwhiteX, CIRCLEwhiteY, 87, 87, BLACK);
+                DrawText("8", CIRCLEwhiteX-25, CIRCLEwhiteY-45, 100, Fade(BLACK, alphaQuarterVis));
+                DrawRectangleRec(invisCIRCLEwhite, Fade(BLACK, alphaInvis));                
+                
+                DrawEllipse(CIRCLEdeleteX, CIRCLEdeleteY, 55, 55, Fade(GRAY, alphaDELETE));
+                DrawRectangle(deleteRecX, deleteRecY, 50, 50, DARKGRAY);
+                DrawTriangle(delTriang1, delTriang2, delTriang3, DARKGRAY);
+                DrawTextEx(font, "X", (Vector2){1555, 982}, 40, 8, WHITE);
+                DrawEllipseLines(CIRCLEdeleteX, CIRCLEdeleteY, 55, 55, BLACK);
+                DrawEllipseLines(CIRCLEdeleteX, CIRCLEdeleteY, 56, 56, BLACK);
+                DrawEllipseLines(CIRCLEdeleteX, CIRCLEdeleteY, 57, 57, BLACK);
+                DrawRectangleRec(invisCIRCLEdelete, Fade(BLACK, alphaInvis));
+                
+                
+                DrawEllipse(SubmitBtnX, SubmitBtnY, 55, 55, Fade(GREEN, alphaSubmit));
+                DrawEllipseLines(SubmitBtnX, SubmitBtnY, 55, 55, DARKGRAY);
+                DrawEllipseLines(SubmitBtnX, SubmitBtnY, 56, 56, DARKGRAY);
+                DrawEllipseLines(SubmitBtnX, SubmitBtnY, 57, 57, DARKGRAY);
+                DrawTextEx(font, "Submit", (Vector2){SubmitBtnX-50, SubmitBtnY-10}, 30, 4, Fade(WHITE, alphaVis));
+                
+                if (((isHoveringSubmit && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) || IsKeyPressed(KEY_ENTER)) && !gamemodeScreen && !mainScreen && currentFCircle == 4) { // IF-statement for submit button
+                    
+                    if (strcmp(storedMemoryBarArray[memBarCount], RNGnums) == 0) { // strcmp compares strings from the string.h library, not the usual comparison operator
+                        // GAME IS FINISHED IF THE STRINGS ARE IDENTICAL
+                        printf("GAME FINISHED\n"); // Debugger
+                        printf("User Input: %s\n", storedMemoryBarArray[memBarCount]);
+                        printf("Correct Combo: %s\n", RNGnums);
+                        fflush(stdout);
+                        hasSubmitted = true;
+                     
+                    } else { // If game is not finished
+                        printf("User Input: %s\n", storedMemoryBarArray[memBarCount]);
+                        currentFCircle = 0;
+                        lightCounter = 0;
+                        fBarArray[0] = Fade(DARKGRAY, alphaDropShadow), fBarArray[1] = Fade(DARKGRAY, alphaDropShadow), fBarArray[2] = Fade(DARKGRAY, alphaDropShadow), fBarArray[3] = Fade(DARKGRAY, alphaDropShadow); // Resets the focus bar to be gray
+                        
+                        int tabCount = 0;
+                        int tabRaiser = 0;
+                        
+                        for (int i = 0; i < 4; i++) { // Runs a loop which appends the strings into a tab array above and converts the strings into colors which the player can see
+                            switch (storedMemoryBarArray[memBarCount][i]) {
+                                case '1':
+                                    tabArray[memBarCount][i] = Fade(RED, tabAlphaArray[memBarCount]);
+                                    break;
+                                case '2':
+                                    tabArray[memBarCount][i] = Fade(GREEN, tabAlphaArray[memBarCount]);
+                                    break;
+                                case '3':
+                                    tabArray[memBarCount][i] = Fade(BLUE, tabAlphaArray[memBarCount]);
+                                    break;
+                                case '4':
+                                    tabArray[memBarCount][i] = Fade(YELLOW, tabAlphaArray[memBarCount]);
+                                    break;
+                                case '5':
+                                    tabArray[memBarCount][i] = Fade(ORANGE, tabAlphaArray[memBarCount]);
+                                    break;
+                                case '6':
+                                    tabArray[memBarCount][i] = Fade(PINK, tabAlphaArray[memBarCount]);
+                                    break;
+                                case '7':
+                                    tabArray[memBarCount][i] = Fade(GRAY, tabAlphaArray[memBarCount]);
+                                    break;
+                                case '8':
+                                    tabArray[memBarCount][i] = Fade(WHITE, tabAlphaArray[memBarCount]);
+                                    break;
+                            }
+                            if (storedMemoryBarArray[memBarCount][i] == RNGnums[i]) { // System for deciding if a color is correct and placed right, or if it's correct but the placement is false, or if it's neither
+                                guessArray[memBarCount][i] = RED; // When correctly placed and color is right
+                                matchedRNG[i] = true;
+                                matchedGUESS[i] = true;
+                            } else if (!matchedGUESS[i]) {
+                                bool queried = false;
+                                for (int j = 0; j < 4; j++) { // When incorrectly placed but color is right
+                                    if (!matchedRNG[j] && storedMemoryBarArray[memBarCount][i] == RNGnums[j]) {
+                                        guessArray[memBarCount][i] = WHITE;
+                                        matchedRNG[j] = true;
+                                        matchedGUESS[i] = true;
+                                        queried = true;
+                                        break;
+                                    }
+                                }
+                                if (!queried) { // When it's neither correctly placed nor color is right
+                                    guessArray[memBarCount][i] = Fade(DARKGRAY, alphaDropShadow);
+                                    matchedRNG[i] = false;
+                                    matchedGUESS[i] = false;   
+                                }
+                            }
+                            
+                            printf("tabArray[%d][%d]: %d %d %d %d (R, G, B, A)\n", // DEBUGGER for tabs
+                                   memBarCount, i,
+                                   tabArray[memBarCount][i].r,
+                                   tabArray[memBarCount][i].g,
+                                   tabArray[memBarCount][i].b,
+                                   tabArray[memBarCount][i].a);
+                                   
+                            printf("guessArray[%d][%d] color: R:%d G:%d B:%d A:%d\n", memBarCount, i, // DEBUGGER for guess dots
+                                    guessArray[memBarCount][i].r,
+                                    guessArray[memBarCount][i].g,
+                                    guessArray[memBarCount][i].b,
+                                    guessArray[memBarCount][i].a);
+                           
+                        }
+                        printf("Triggered, incorrect\n"); // Debugger for combinations
+                        printf("NO. %d %f\n", memBarCount, tabAlphaArray[memBarCount]);
+                        fflush(stdout);
+                        
+                        memBarCount++;
+                        tabCount++;
+                        tabRaiser++;
+                      
+                        if (memBarCount >= 8) { // Game over is triggered if a tab above 8 is opened
+                            if (strcmp(storedMemoryBarArray[memBarCount - 1], RNGnums) != 0) {
+                                gameOver = true;
+                                advancedScreen = false;
+                                gamemodeScreen = false;
+                                mainScreen = false;
+                                startingScreen = false;
+                                instructionScreenAdvanced = false;
+                            }
+                        }
+                        
+                    }
+                    
+                } else if (isHoveringSubmit && gamemodeScreen == false && mainScreen == false) {
+                    alphaSubmit = 0.5f;
+                } else {
+                    alphaSubmit = 0.8f;
+                }
+                
+                if (hasSubmitted) { // Confirms level complete when correct combination is submitted
+                    printf("Have you submitted? %d", hasSubmitted);
+                    fflush(stdout);
+                    
+                    advancedScreen = false;
+                    gamemodeScreen = false;
+                    mainScreen = false;
+                    startingScreen = false;
+                    instructionScreenAdvanced = false;
+                    
+                    hasSubmitted = false;
+                    
+                }
+               
+            }
+            
+            if (!advancedScreen && !gamemodeScreen && !mainScreen && !startingScreen && !instructionScreenAdvanced && !gameOver) { // LEVEL COMPLETE SCREEN, a lot of resetting...
+                if (alphaBtnFadeIn < 1) alphaBtnFadeIn += 0.02f;
+                fBarArray[0] = Fade(DARKGRAY, alphaDropShadow), fBarArray[1] = Fade(DARKGRAY, alphaDropShadow), fBarArray[2] = Fade(DARKGRAY, alphaDropShadow), fBarArray[3] = Fade(DARKGRAY, alphaDropShadow);
+                
+                DrawRectangle(0, 0, 2000, 2000, Fade(BLACK, alphaHalfVis));
+                
+                DrawText("MYSTERY", 420, 150, 200, Fade(GOLD, alphaBtnFadeIn));
+                DrawText("SOLVED", 500, 350, 200, Fade(GOLD, alphaBtnFadeIn));
+                
+                DrawEllipse(610, 700, 250, 100, Fade(GOLD, alphaBtnFadeIn));
+                DrawEllipse(1210, 700, 250, 100, Fade(GOLD, alphaBtnFadeIn));
+                
+                DrawRectangleRec(invisRetry, Fade(RED, alphaInvis));
+                DrawRectangleRec(invisMainMenu, Fade(RED, alphaInvis));
+                
+                
+                DrawTextEx(font, "Retry", posRetryFinishBlack, 103, 10, Fade(BLACK, alphaBtnFadeIn));
+                DrawTextEx(font, "Retry", posRetryFinish, 100, 10, Fade(WHITE, alphaBtnFadeIn));
+                
+                DrawTextEx(font, "Main Menu", posMainFinishBlack, 80, 10, Fade(BLACK, alphaBtnFadeIn));
+                DrawTextEx(font, "Main Menu", posMainFinish, 80, 10, Fade(WHITE, alphaBtnFadeIn));
+
+                if (isHoveringRetry && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) { // When clicking retry button
+                    timerLimit = 500;
+                    hasSubmitted = false;
+                    startingScreen = true;
+                    memBarCount = 0;
+                    RNGcount = 0;
+                    currentFCircle = 0;
+                    gameOver = false;
+                    RNG(1,8);
+                    instructionScreenAdvanced = false;
+                    
+                    // Resetting alphas
+                    tabAlphaArray[memBarCount] = 1.0f;
+                    alphaBtnFadeIn = 0.0f;
+                    alphaNUM3 = 0.0f; alphaNUM2 = 0.0f; alphaNUM1 = 0.0f; alphaGO = 0.0f;             
+                    
+                    for (int i = 0; i < 5; i++) {
+                        deleteChar();
+                    }
+                    
+                    for (int i = 0; i < 9; i++) {
+                        for (int j = 0; j < 4; j++) {
+                            tabArray[i][j] = Fade(DARKGRAY, alphaDropShadow);
+                            guessArray[i][j] = Fade(DARKGRAY, alphaDropShadow);
+                            storedMemoryBarArray[i][j] = '\0';
+                        }
+                    }     
+                 
+                } else if (isHoveringRetry && gamemodeScreen == false && mainScreen == false) {
+                    SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
+                } else {
+                    SetMouseCursor(MOUSE_CURSOR_DEFAULT);
+                }  
+                
+                if (isHoveringMainMenu && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) { // When clicking main menu button
+                    timerLimit = 500;
+                    hasSubmitted = false;
+                    mainScreen = true;
+                    memBarCount = 0;
+                    RNGcount = 0;
+                    currentFCircle = 0;
+                    gameOver = false;
+                    instructionScreenAdvanced = false;
+                    
+                    // Resetting alphas
+                    alphaMain = 0.0f;
+                    alphaGamemode = 0.0f;
+                    tabAlphaArray[memBarCount] = 1.0f;
+                    alphaBtnFadeIn = 0.0f;
+                    alphaNUM3 = 0.0f; alphaNUM2 = 0.0f; alphaNUM1 = 0.0f; alphaGO = 0.0f;
+                    RNG(1,8);
+                    fflush(stdout);                
+                    
+                    for (int i = 0; i < 5; i++) {
+                        deleteChar();
+                    }
+                    
+                    for (int i = 0; i < 9; i++) {
+                        for (int j = 0; j < 4; j++) {
+                            tabArray[i][j] = Fade(DARKGRAY, alphaDropShadow);
+                            guessArray[i][j] = Fade(DARKGRAY, alphaDropShadow);
+                            storedMemoryBarArray[i][j] = '\0';
+                        }
+                    }     
+                 
+                } else if (isHoveringMainMenu && gamemodeScreen == false && mainScreen == false) {
+                    SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
+                } else {
+                    SetMouseCursor(MOUSE_CURSOR_DEFAULT);
+                }  
+            } else if (!advancedScreen && !gamemodeScreen && !mainScreen && !startingScreen && !instructionScreenAdvanced && gameOver) { // GAME OVER screen, practically identical except for output
+                if (alphaBtnFadeIn < 1) alphaBtnFadeIn += 0.02f;
+                fBarArray[0] = Fade(DARKGRAY, alphaDropShadow), fBarArray[1] = Fade(DARKGRAY, alphaDropShadow), fBarArray[2] = Fade(DARKGRAY, alphaDropShadow), fBarArray[3] = Fade(DARKGRAY, alphaDropShadow);
+                
+                DrawRectangle(0, 0, 2000, 2000, Fade(BLACK, alphaQuarterVis));
+                
+                DrawText("GAME", 480, 50, 300, Fade(GOLD, alphaBtnFadeIn));
+                DrawText("OVER", 480, 300, 300, Fade(GOLD, alphaBtnFadeIn));
+                
+                DrawEllipse(610, 700, 250, 100, Fade(GOLD, alphaBtnFadeIn));
+                DrawEllipse(1210, 700, 250, 100, Fade(GOLD, alphaBtnFadeIn));
+                
+                DrawRectangleRec(invisRetry, Fade(RED, alphaInvis));
+                DrawRectangleRec(invisMainMenu, Fade(RED, alphaInvis));
+                
+                
+                DrawTextEx(font, "Retry", posRetryFinishBlack, 103, 10, Fade(BLACK, alphaBtnFadeIn));
+                DrawTextEx(font, "Retry", posRetryFinish, 100, 10, Fade(WHITE, alphaBtnFadeIn));
+                
+                DrawTextEx(font, "Main Menu", posMainFinishBlack, 80, 10, Fade(BLACK, alphaBtnFadeIn));
+                DrawTextEx(font, "Main Menu", posMainFinish, 80, 10, Fade(WHITE, alphaBtnFadeIn));
+
+                if (isHoveringRetry && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
+                    timerLimit = 500;
+                    hasSubmitted = false;
+                    startingScreen = true;
+                    memBarCount = 0;
+                    RNGcount = 0;
+                    currentFCircle = 0;
+                    gameOver = false;
+                    RNG(1,8);
+                    instructionScreenAdvanced = false;
+                    
+                    // Resetting alphas
+                    tabAlphaArray[memBarCount] = 1.0f;
+                    alphaBtnFadeIn = 0.0f;
+                    alphaNUM3 = 0.0f; alphaNUM2 = 0.0f; alphaNUM1 = 0.0f; alphaGO = 0.0f;             
+                    
+                    for (int i = 0; i < 5; i++) {
+                        deleteChar();
+                    }
+                    
+                    for (int i = 0; i < 9; i++) {
+                        for (int j = 0; j < 4; j++) {
+                            tabArray[i][j] = Fade(DARKGRAY, alphaDropShadow);
+                            guessArray[i][j] = Fade(DARKGRAY, alphaDropShadow);
+                            storedMemoryBarArray[i][j] = '\0';
+                        }
+                    }     
+                 
+                } else if (isHoveringRetry && gamemodeScreen == false && mainScreen == false) {
+                    SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
+                } else {
+                    SetMouseCursor(MOUSE_CURSOR_DEFAULT);
+                }  
+                
+                if (isHoveringMainMenu && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && gamemodeScreen == false && mainScreen == false) {
+                    timerLimit = 500;
+                    hasSubmitted = false;
+                    mainScreen = true;
+                    memBarCount = 0;
+                    RNGcount = 0;
+                    currentFCircle = 0;
+                    gameOver = false;
+                    instructionScreenAdvanced = false;
+                    
+                    // Resetting alphas
+                    alphaMain = 0.0f;
+                    alphaGamemode = 0.0f;
+                    tabAlphaArray[memBarCount] = 1.0f;
+                    alphaBtnFadeIn = 0.0f;
+                    alphaNUM3 = 0.0f; alphaNUM2 = 0.0f; alphaNUM1 = 0.0f; alphaGO = 0.0f;
+                    RNG(1,8);
+                    fflush(stdout);                
+                    
+                    for (int i = 0; i < 5; i++) {
+                        deleteChar();
+                    }
+                    
+                    for (int i = 0; i < 9; i++) {
+                        for (int j = 0; j < 4; j++) {
+                            tabArray[i][j] = Fade(DARKGRAY, alphaDropShadow);
+                            guessArray[i][j] = Fade(DARKGRAY, alphaDropShadow);
+                            storedMemoryBarArray[i][j] = '\0';
+                        }
+                    }     
+                 
+                } else if (isHoveringMainMenu && gamemodeScreen == false && mainScreen == false) {
+                    SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
+                } else {
+                    SetMouseCursor(MOUSE_CURSOR_DEFAULT);
+                }  
+            }
         EndDrawing();
-        //----------------------------------------------------------------------------------
     }
+                  
+        //----------------------------------------------------------------------------------
+       
 
     // De-Initialization
     //--------------------------------------------------------------------------------------
